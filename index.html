@@ -38,9 +38,7 @@
       position: relative;
     }
 
-    /* ---------------------------------------------------
-       FULL-SCREEN ORANGE SWEEP (2 streaks, bright + visible)
-    --------------------------------------------------- */
+    /* ORANGE SWEEP */
     #transition-sweep,
     #transition-sweep-2 {
       position: fixed;
@@ -49,12 +47,11 @@
       width: 150%;
       height: 100%;
       pointer-events: none;
-      z-index: 999999; /* GUARANTEED ABOVE EVERYTHING */
+      z-index: 999999;
       transform: translateX(0);
       transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    /* Main bright streak */
     #transition-sweep {
       background: linear-gradient(
         90deg,
@@ -67,7 +64,6 @@
       filter: blur(20px);
     }
 
-    /* Secondary faint trailing streak */
     #transition-sweep-2 {
       background: linear-gradient(
         90deg,
@@ -85,9 +81,7 @@
       transform: translateX(260%);
     }
 
-    /* ---------------------------------------------------
-       SCREEN CARDS
-    --------------------------------------------------- */
+    /* SCREENS */
     .screen {
       position: absolute;
       width: 90%;
@@ -96,17 +90,15 @@
       backdrop-filter: blur(12px);
       padding: 40px;
       border-radius: 20px;
-      text-align: center;
+      text-align: left;
       border: 1px solid rgba(238, 131, 94, 0.25);
       box-shadow: 0 15px 45px rgba(0, 0, 0, 0.55);
       overflow: hidden;
       opacity: 0;
       transform: translateX(20px);
       pointer-events: none;
-      transition:
-        opacity 0.45s ease,
-        transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
-      z-index: 10; /* BELOW SWEEP */
+      transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: 10;
     }
 
     .screen.active {
@@ -119,18 +111,18 @@
       margin-bottom: 30px;
       font-size: 24px;
       color: var(--prc-orange);
+      text-align: center;
     }
 
     label {
       display: block;
-      text-align: left;
       margin-bottom: 8px;
       font-size: 12px;
       color: #9bb3c9;
       text-transform: uppercase;
     }
 
-    input, select {
+    input {
       width: 100%;
       padding: 16px;
       margin-bottom: 20px;
@@ -139,22 +131,95 @@
       background: var(--bg-dark);
       color: white;
       font-size: 18px;
-      box-sizing: border-box;
-      -webkit-appearance: none;
     }
 
-    button {
+    /* PRC BUTTONS */
+    .prc-option {
+      width: 100%;
+      padding: 18px;
+      margin-bottom: 15px;
+      border-radius: 12px;
+      background: var(--prc-blue);
+      border: 2px solid var(--prc-orange);
+      color: var(--prc-orange);
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.15s ease;
+      text-align: center;
+    }
+
+    .prc-option:hover {
+      background: #2f618d;
+      transform: scale(1.02);
+    }
+
+    .prc-option.selected {
+      background: var(--prc-orange);
+      color: var(--prc-blue);
+      border-color: var(--prc-blue);
+    }
+
+    button.submit-btn {
       width: 100%;
       padding: 16px;
-      background: var(--prc-blue);
-      color: var(--prc-orange);
-      border: 1px solid var(--prc-orange);
+      background: var(--prc-orange);
+      color: var(--prc-blue);
+      border: none;
       border-radius: 12px;
       font-size: 18px;
       font-weight: bold;
-      text-transform: uppercase;
       cursor: pointer;
-      margin-bottom: 15px;
+      margin-top: 10px;
+    }
+
+    /* DROPDOWNS */
+    .dropdown-header {
+      width: 100%;
+      padding: 18px;
+      background: var(--prc-blue);
+      border: 2px solid var(--prc-orange);
+      border-radius: 12px;
+      color: var(--prc-orange);
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 10px;
+      position: relative;
+      text-align: left;
+    }
+
+    .dropdown-header::after {
+      content: "▼";
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: var(--prc-orange);
+    }
+
+    .dropdown-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease;
+    }
+
+    .dropdown-content.open {
+      max-height: 500px;
+    }
+
+    .orange-line {
+      width: 0%;
+      height: 4px;
+      background: var(--prc-orange);
+      margin: 8px 0 15px 0;
+      border-radius: 4px;
+      transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .orange-line.active {
+      width: 100%;
     }
 
     #toast {
@@ -184,14 +249,14 @@
   <!-- MENU SCREEN -->
   <div class="screen active" id="menu">
     <h1>Select Check-In Type</h1>
-    <button onclick="loadSafetyNet()">Safety-Net Check-In</button>
-    <button onclick="loadClinic()">Clinic Check-In</button>
-    <button onclick="loadAdoptions()">Adoptions</button>
+    <button class="prc-option" onclick="loadSafetyNet()">Safety-Net Check-In</button>
+    <button class="prc-option" onclick="loadClinic()">Clinic Check-In</button>
+    <button class="prc-option" onclick="loadAdoptions()">Adoptions</button>
   </div>
 
   <!-- FORM SCREEN -->
   <div class="screen" id="form-container">
-    <button style="margin-bottom:20px;" onclick="goBack()">⬅ Back to Menu</button>
+    <button class="prc-option" onclick="goBack()">⬅ Back to Menu</button>
     <h1 id="form-title"></h1>
     <form id="checkin-form"></form>
   </div>
@@ -213,31 +278,21 @@
     const form = document.getElementById("checkin-form");
     const title = document.getElementById("form-title");
 
-    /* ---------------------------------------------------
-       ORANGE SWEEP ANIMATION
-    --------------------------------------------------- */
     function runSweep() {
       const s1 = document.getElementById("transition-sweep");
       const s2 = document.getElementById("transition-sweep-2");
-
       s1.classList.add("sweep-active");
       s2.classList.add("sweep-active");
-
       setTimeout(() => {
         s1.classList.remove("sweep-active");
         s2.classList.remove("sweep-active");
       }, 700);
     }
 
-    /* ---------------------------------------------------
-       SCREEN SWITCHING
-    --------------------------------------------------- */
     function showScreen(screenToShow) {
       runSweep();
-
       const screens = [menu, formContainer];
       screens.forEach(s => s.classList.remove("active"));
-
       setTimeout(() => {
         screenToShow.classList.add("active");
       }, 150);
@@ -249,9 +304,6 @@
       title.textContent = "";
     }
 
-    /* ---------------------------------------------------
-       FIREBASE CONFIGS
-    --------------------------------------------------- */
     const SAFETY_NET_CONFIG = {
       apiKey: "AIzaSyBmeTvk7BeWzGwLSgfw6Egr9k2QjG2lqVM",
       authDomain: "safety-net-check-in.firebaseapp.com",
@@ -283,9 +335,40 @@
       measurementId: "G-T0622DTKSK"
     };
 
-    /* ---------------------------------------------------
-       SAFETY-NET FORM
-    --------------------------------------------------- */
+    function initFirebase(appName, config) {
+      if (activeApp) activeApp.delete?.();
+      activeApp = firebase.initializeApp(config, appName);
+      db = activeApp.database();
+      checkinsRef = db.ref("checkins");
+    }
+
+    function setupDropdown(headerId, lineId, dropdownId, onSelect) {
+      const header = document.getElementById(headerId);
+      const line = document.getElementById(lineId);
+      const dropdown = document.getElementById(dropdownId);
+      const buttons = dropdown.querySelectorAll(".prc-option");
+
+      header.addEventListener("click", () => {
+        dropdown.classList.toggle("open");
+        line.classList.toggle("active");
+      });
+
+      buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          buttons.forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+
+          const value = btn.dataset.value;
+          header.textContent = value;
+
+          dropdown.classList.remove("open");
+          line.classList.remove("active");
+
+          onSelect(value);
+        });
+      });
+    }
+
     function loadSafetyNet() {
       title.textContent = "Safety-Net Check-In";
 
@@ -294,37 +377,66 @@
         <input id="guestName" required>
 
         <label>Reason for Visit</label>
-        <select id="reasonSelect" required>
-          <option value="">Select</option>
-          <option>Pet Food Pantry</option>
-          <option>Emergency Boarding and Foster</option>
-          <option>Joining Safety-Net</option>
-          <option>Medical</option>
-          <option value="other">Other</option>
-        </select>
+        <div class="dropdown-header" id="sn-header">Select...</div>
+        <div class="orange-line" id="sn-line"></div>
 
-        <input id="reasonOther" placeholder="Please describe..." style="display:none; margin-top:-10px;">
+        <div class="dropdown-content" id="sn-dropdown">
+          <button type="button" class="prc-option" data-value="Applying to Safety-Net">Applying to Safety-Net</button>
+          <button type="button" class="prc-option" data-value="Current Safety Net Client">Current Safety Net Client</button>
+          <button type="button" class="prc-option" data-value="Pet Pantry">Pet Pantry</button>
+          <button type="button" class="prc-option" data-value="Other">Other</button>
+        </div>
 
-        <button type="submit">Submit</button>
+        <input id="reasonOther" placeholder="Please describe..." style="display:none; margin-top:10px;">
+
+        <button class="submit-btn" type="submit">Submit</button>
       `;
 
-      setTimeout(() => {
-        const sel = document.getElementById("reasonSelect");
-        const other = document.getElementById("reasonOther");
+      let selectedReason = "";
 
-        sel.addEventListener("change", () => {
-          other.style.display = sel.value === "other" ? "block" : "none";
-          other.required = sel.value === "other";
-        });
+      setTimeout(() => {
+        setupDropdown(
+          "sn-header",
+          "sn-line",
+          "sn-dropdown",
+          (value) => {
+            selectedReason = value;
+            const otherField = document.getElementById("reasonOther");
+            if (value === "Other") {
+              otherField.style.display = "block";
+              otherField.required = true;
+            } else {
+              otherField.style.display = "none";
+              otherField.required = false;
+            }
+          }
+        );
       }, 50);
+
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+
+        const data = {
+          time: Date.now(),
+          guestName: document.getElementById("guestName").value.trim(),
+          status: "waiting",
+          reason: selectedReason === "Other"
+            ? document.getElementById("reasonOther").value.trim()
+            : selectedReason
+        };
+
+        await checkinsRef.push(data);
+
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2000);
+
+        form.reset();
+      };
 
       initFirebase("safetynet", SAFETY_NET_CONFIG);
       showScreen(formContainer);
     }
 
-    /* ---------------------------------------------------
-       CLINIC FORM
-    --------------------------------------------------- */
     function loadClinic() {
       title.textContent = "Clinic Check-In";
 
@@ -333,14 +445,16 @@
         <input id="guestName" required>
 
         <label>Animal Type</label>
-        <select id="animal" required>
-          <option value="">Select</option>
-          <option>Dog</option>
-          <option>Cat</option>
-          <option value="other">Other</option>
-        </select>
+        <div class="dropdown-header" id="animal-header">Select...</div>
+        <div class="orange-line" id="animal-line"></div>
 
-        <input id="animalOther" placeholder="Please describe..." style="display:none; margin-top:-10px;">
+        <div class="dropdown-content" id="animal-dropdown">
+          <button type="button" class="prc-option" data-value="Dog">Dog</button>
+          <button type="button" class="prc-option" data-value="Cat">Cat</button>
+          <button type="button" class="prc-option" data-value="Other">Other</button>
+        </div>
+
+        <input id="animalOther" placeholder="Please describe..." style="display:none; margin-top:10px;">
 
         <label>Breed</label>
         <input id="breed" required>
@@ -351,26 +465,57 @@
         <label>Reason for Visit</label>
         <input id="reason" required>
 
-        <button type="submit">Submit</button>
+        <button class="submit-btn" type="submit">Submit</button>
       `;
 
-      setTimeout(() => {
-        const animal = document.getElementById("animal");
-        const other = document.getElementById("animalOther");
+      let selectedAnimal = "";
 
-        animal.addEventListener("change", () => {
-          other.style.display = animal.value === "other" ? "block" : "none";
-          other.required = animal.value === "other";
-        });
+      setTimeout(() => {
+        setupDropdown(
+          "animal-header",
+          "animal-line",
+          "animal-dropdown",
+          (value) => {
+            selectedAnimal = value;
+            const otherField = document.getElementById("animalOther");
+            if (value === "Other") {
+              otherField.style.display = "block";
+              otherField.required = true;
+            } else {
+              otherField.style.display = "none";
+              otherField.required = false;
+            }
+          }
+        );
       }, 50);
+
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+
+        const data = {
+          time: Date.now(),
+          guestName: document.getElementById("guestName").value.trim(),
+          status: "waiting",
+          animal: selectedAnimal === "Other"
+            ? document.getElementById("animalOther").value.trim()
+            : selectedAnimal,
+          breed: document.getElementById("breed").value.trim(),
+          weight: document.getElementById("weight").value.trim(),
+          reason: document.getElementById("reason").value.trim()
+        };
+
+        await checkinsRef.push(data);
+
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2000);
+
+        form.reset();
+      };
 
       initFirebase("clinic", CLINIC_CONFIG);
       showScreen(formContainer);
     }
 
-    /* ---------------------------------------------------
-       ADOPTIONS FORM
-    --------------------------------------------------- */
     function loadAdoptions() {
       title.textContent = "Adoptions Check-In";
 
@@ -379,78 +524,55 @@
         <input id="guestName" required>
 
         <label>I'm interested in</label>
-        <select id="interest" required>
-          <option value="">Select</option>
-          <option>Dogs</option>
-          <option>Cats</option>
-          <option>Other</option>
-        </select>
+        <div class="dropdown-header" id="interest-header">Select...</div>
+        <div class="orange-line" id="interest-line"></div>
 
-        <button type="submit">Submit</button>
+        <div class="dropdown-content" id="interest-dropdown">
+          <button type="button" class="prc-option" data-value="Dogs">Dogs</button>
+          <button type="button" class="prc-option" data-value="Cats">Cats</button>
+          <button type="button" class="prc-option" data-value="Other">Other</button>
+        </div>
+
+        <button class="submit-btn" type="submit">Submit</button>
       `;
+
+      let selectedInterest = "";
+
+      setTimeout(() => {
+        setupDropdown(
+          "interest-header",
+          "interest-line",
+          "interest-dropdown",
+          (value) => {
+            selectedInterest = value;
+          }
+        );
+      }, 50);
+
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+
+        const data = {
+          time: Date.now(),
+          guestName: document.getElementById("guestName").value.trim(),
+          status: "waiting",
+          interest: selectedInterest
+        };
+
+        await checkinsRef.push(data);
+
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2000);
+
+        form.reset();
+      };
 
       initFirebase("adoptions", ADOPTIONS_CONFIG);
       showScreen(formContainer);
     }
-
-    /* ---------------------------------------------------
-       FIREBASE INIT
-    --------------------------------------------------- */
-    function initFirebase(appName, config) {
-      if (activeApp) activeApp.delete?.();
-      activeApp = firebase.initializeApp(config, appName);
-      db = activeApp.database();
-      checkinsRef = db.ref("checkins");
-    }
-
-    /* ---------------------------------------------------
-       FORM SUBMISSION
-    --------------------------------------------------- */
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const data = {
-        time: Date.now(),
-        guestName: document.getElementById("guestName").value.trim(),
-        status: "waiting"
-      };
-
-      // Safety-Net
-      const reasonSelect = document.getElementById("reasonSelect");
-      const reasonOther = document.getElementById("reasonOther");
-      if (reasonSelect) {
-        data.reason = reasonSelect.value === "other"
-          ? reasonOther.value.trim()
-          : reasonSelect.value;
-      }
-
-      // Clinic
-      const animal = document.getElementById("animal");
-      if (animal) {
-        const animalOther = document.getElementById("animalOther");
-        data.animal = animal.value === "other"
-          ? animalOther.value.trim()
-          : animal.value;
-
-        data.breed = document.getElementById("breed").value.trim();
-        data.weight = document.getElementById("weight").value.trim();
-        data.reason = document.getElementById("reason").value.trim();
-      }
-
-      // Adoptions
-      const interest = document.getElementById("interest");
-      if (interest) {
-        data.interest = interest.value;
-      }
-
-      await checkinsRef.push(data);
-
-      toast.classList.add("show");
-      setTimeout(() => toast.classList.remove("show"), 2000);
-
-      form.reset();
-    });
   </script>
 
 </body>
 </html>
+
+
