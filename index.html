@@ -116,6 +116,7 @@
     <h1>Select Check-In Type</h1>
     <button onclick="loadSafetyNet()">Safety-Net Check-In</button>
     <button onclick="loadClinic()">Clinic Check-In</button>
+    <button onclick="loadAdoptions()">Adoptions</button>
   </div>
 
   <!-- FORM -->
@@ -167,6 +168,16 @@
       measurementId: "G-7DTQ5FNX3Q"
     };
 
+    const ADOPTIONS_CONFIG = {
+      apiKey: "AIzaSyAspb1JkG1igquVsMgk28PwGZC5LEyUkRA",
+      authDomain: "adoptions-pager.firebaseapp.com",
+      projectId: "adoptions-pager",
+      storageBucket: "adoptions-pager.firebasestorage.app",
+      messagingSenderId: "601826450603",
+      appId: "1:601826450603:web:4d54a4c88bfa552e242bee",
+      measurementId: "G-T0622DTKSK"
+    };
+
     /* -----------------------------
        BACK TO MENU
     ----------------------------- */
@@ -178,7 +189,7 @@
     }
 
     /* -----------------------------
-       LOAD SAFETY-NET FORM
+       SAFETY-NET FORM
     ----------------------------- */
     function loadSafetyNet() {
       title.textContent = "Safety-Net Check-In";
@@ -196,7 +207,7 @@
     }
 
     /* -----------------------------
-       LOAD CLINIC FORM
+       CLINIC FORM
     ----------------------------- */
     function loadClinic() {
       title.textContent = "Clinic Check-In";
@@ -227,6 +238,30 @@
     }
 
     /* -----------------------------
+       ADOPTIONS FORM (UPDATED)
+    ----------------------------- */
+    function loadAdoptions() {
+      title.textContent = "Adoptions";
+
+      form.innerHTML = `
+        <label>Name</label>
+        <input id="guestName" required>
+
+        <label>I'm interested in</label>
+        <select id="interest" required>
+          <option value="">Select</option>
+          <option>Dogs</option>
+          <option>Cats</option>
+          <option>Other</option>
+        </select>
+
+        <button type="submit">Submit</button>
+      `;
+
+      initFirebase("adoptions", ADOPTIONS_CONFIG);
+    }
+
+    /* -----------------------------
        INITIALIZE CORRECT FIREBASE
     ----------------------------- */
     function initFirebase(appName, config) {
@@ -249,15 +284,21 @@
       const data = {
         time: Date.now(),
         guestName: document.getElementById("guestName").value.trim(),
-        reason: document.getElementById("reason").value.trim(),
         status: "waiting"
       };
 
-      // Add clinic-only fields if present
+      if (document.getElementById("reason")) {
+        data.reason = document.getElementById("reason").value.trim();
+      }
+
       if (document.getElementById("animal")) {
         data.animal = document.getElementById("animal").value;
         data.breed = document.getElementById("breed").value.trim();
         data.weight = document.getElementById("weight").value.trim();
+      }
+
+      if (document.getElementById("interest")) {
+        data.interest = document.getElementById("interest").value;
       }
 
       await checkinsRef.push(data);
