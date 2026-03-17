@@ -116,7 +116,7 @@
     <h1>Select Check-In Type</h1>
     <button onclick="loadSafetyNet()">Safety-Net Check-In</button>
     <button onclick="loadClinic()">Clinic Check-In</button>
-    <button onclick="loadAdoptions()">Adoptions</button>
+    <button onclick="loadAdoptions()">Adoptions Check-In</button>
   </div>
 
   <!-- FORM -->
@@ -144,7 +144,7 @@
     const title = document.getElementById("form-title");
 
     /* -----------------------------
-       FIREBASE CONFIGS (SEPARATE)
+       FIREBASE CONFIGS
     ----------------------------- */
 
     const SAFETY_NET_CONFIG = {
@@ -189,19 +189,46 @@
     }
 
     /* -----------------------------
-       SAFETY-NET FORM
+       SAFETY-NET FORM (UPDATED)
     ----------------------------- */
     function loadSafetyNet() {
       title.textContent = "Safety-Net Check-In";
+
       form.innerHTML = `
         <label>Name</label>
         <input id="guestName" required>
 
         <label>Reason for Visit</label>
-        <input id="reason" required>
+        <select id="reasonSelect" required>
+          <option value="">Select</option>
+          <option>Pet Food Pantry</option>
+          <option>Emergency Boarding and Foster</option>
+          <option>Joining Safety-Net</option>
+          <option>Medical</option>
+          <option value="other">Other</option>
+        </select>
+
+        <input id="reasonOther" placeholder="Please describe..." style="display:none; margin-top:-10px;">
 
         <button type="submit">Submit</button>
       `;
+
+      // Show/hide "Other" field
+      setTimeout(() => {
+        const reasonSelect = document.getElementById("reasonSelect");
+        const reasonOther = document.getElementById("reasonOther");
+
+        reasonSelect.addEventListener("change", () => {
+          if (reasonSelect.value === "other") {
+            reasonOther.style.display = "block";
+            reasonOther.required = true;
+          } else {
+            reasonOther.style.display = "none";
+            reasonOther.required = false;
+            reasonOther.value = "";
+          }
+        });
+      }, 50);
 
       initFirebase("safetynet", SAFETY_NET_CONFIG);
     }
@@ -238,7 +265,7 @@
     }
 
     /* -----------------------------
-       ADOPTIONS FORM (UPDATED)
+       ADOPTIONS FORM
     ----------------------------- */
     function loadAdoptions() {
       title.textContent = "Adoptions Check-In";
@@ -262,7 +289,7 @@
     }
 
     /* -----------------------------
-       INITIALIZE CORRECT FIREBASE
+       INITIALIZE FIREBASE
     ----------------------------- */
     function initFirebase(appName, config) {
       menu.style.display = "none";
@@ -287,16 +314,25 @@
         status: "waiting"
       };
 
-      if (document.getElementById("reason")) {
-        data.reason = document.getElementById("reason").value.trim();
+      // SAFETY-NET reason handling
+      const reasonSelect = document.getElementById("reasonSelect");
+      const reasonOther = document.getElementById("reasonOther");
+
+      if (reasonSelect) {
+        data.reason = reasonSelect.value === "other"
+          ? reasonOther.value.trim()
+          : reasonSelect.value;
       }
 
+      // Clinic fields
       if (document.getElementById("animal")) {
         data.animal = document.getElementById("animal").value;
         data.breed = document.getElementById("breed").value.trim();
         data.weight = document.getElementById("weight").value.trim();
+        data.reason = document.getElementById("reason").value.trim();
       }
 
+      // Adoptions
       if (document.getElementById("interest")) {
         data.interest = document.getElementById("interest").value;
       }
