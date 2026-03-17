@@ -14,7 +14,6 @@
       --prc-blue: #254F71;
       --prc-orange: #EE835E;
       --bg-dark: #0d1b2a;
-      --bg-mid: #14283d;
       --text-light: #e0e0e0;
     }
 
@@ -36,18 +35,84 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       color: var(--text-light);
       overflow: hidden;
+      position: relative;
     }
 
-    .container {
-      background: rgba(15, 30, 45, 0.75);
+    /* ---------------------------------------------------
+       FULL-SCREEN ORANGE SWEEP (2 streaks, bright + visible)
+    --------------------------------------------------- */
+    #transition-sweep,
+    #transition-sweep-2 {
+      position: fixed;
+      top: 0;
+      left: -150%;
+      width: 150%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999999; /* GUARANTEED ABOVE EVERYTHING */
+      transform: translateX(0);
+      transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* Main bright streak */
+    #transition-sweep {
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 140, 90, 0.9) 35%,
+        rgba(255, 160, 110, 1) 50%,
+        rgba(255, 140, 90, 0.9) 65%,
+        transparent 100%
+      );
+      filter: blur(20px);
+    }
+
+    /* Secondary faint trailing streak */
+    #transition-sweep-2 {
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 140, 90, 0.45) 40%,
+        rgba(255, 160, 110, 0.55) 55%,
+        rgba(255, 140, 90, 0.45) 70%,
+        transparent 100%
+      );
+      filter: blur(32px);
+      transition-duration: 0.75s;
+    }
+
+    .sweep-active {
+      transform: translateX(260%);
+    }
+
+    /* ---------------------------------------------------
+       SCREEN CARDS
+    --------------------------------------------------- */
+    .screen {
+      position: absolute;
+      width: 90%;
+      max-width: 400px;
+      background: rgba(15, 30, 45, 0.78);
       backdrop-filter: blur(12px);
       padding: 40px;
       border-radius: 20px;
-      width: 90%;
-      max-width: 400px;
       text-align: center;
       border: 1px solid rgba(238, 131, 94, 0.25);
       box-shadow: 0 15px 45px rgba(0, 0, 0, 0.55);
+      overflow: hidden;
+      opacity: 0;
+      transform: translateX(20px);
+      pointer-events: none;
+      transition:
+        opacity 0.45s ease,
+        transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: 10; /* BELOW SWEEP */
+    }
+
+    .screen.active {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
     }
 
     h1 {
@@ -103,6 +168,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.4s ease;
+      z-index: 9999999;
     }
 
     #toast.show { opacity: 1; }
@@ -111,16 +177,20 @@
 
 <body>
 
-  <!-- MENU -->
-  <div class="container" id="menu">
+  <!-- ORANGE SWEEP EFFECTS -->
+  <div id="transition-sweep"></div>
+  <div id="transition-sweep-2"></div>
+
+  <!-- MENU SCREEN -->
+  <div class="screen active" id="menu">
     <h1>Select Check-In Type</h1>
     <button onclick="loadSafetyNet()">Safety-Net Check-In</button>
     <button onclick="loadClinic()">Clinic Check-In</button>
-    <button onclick="loadAdoptions()">Adoptions Check-In</button>
+    <button onclick="loadAdoptions()">Adoptions</button>
   </div>
 
-  <!-- FORM -->
-  <div class="container" id="form-container" style="display:none;">
+  <!-- FORM SCREEN -->
+  <div class="screen" id="form-container">
     <button style="margin-bottom:20px;" onclick="goBack()">⬅ Back to Menu</button>
     <h1 id="form-title"></h1>
     <form id="checkin-form"></form>
@@ -128,7 +198,7 @@
 
   <div id="toast">Check-in submitted!</div>
 
-  <!-- Firebase 8 (iPad-safe) -->
+  <!-- Firebase 8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -143,10 +213,45 @@
     const form = document.getElementById("checkin-form");
     const title = document.getElementById("form-title");
 
-    /* -----------------------------
-       FIREBASE CONFIGS
-    ----------------------------- */
+    /* ---------------------------------------------------
+       ORANGE SWEEP ANIMATION
+    --------------------------------------------------- */
+    function runSweep() {
+      const s1 = document.getElementById("transition-sweep");
+      const s2 = document.getElementById("transition-sweep-2");
 
+      s1.classList.add("sweep-active");
+      s2.classList.add("sweep-active");
+
+      setTimeout(() => {
+        s1.classList.remove("sweep-active");
+        s2.classList.remove("sweep-active");
+      }, 700);
+    }
+
+    /* ---------------------------------------------------
+       SCREEN SWITCHING
+    --------------------------------------------------- */
+    function showScreen(screenToShow) {
+      runSweep();
+
+      const screens = [menu, formContainer];
+      screens.forEach(s => s.classList.remove("active"));
+
+      setTimeout(() => {
+        screenToShow.classList.add("active");
+      }, 150);
+    }
+
+    function goBack() {
+      showScreen(menu);
+      form.innerHTML = "";
+      title.textContent = "";
+    }
+
+    /* ---------------------------------------------------
+       FIREBASE CONFIGS
+    --------------------------------------------------- */
     const SAFETY_NET_CONFIG = {
       apiKey: "AIzaSyBmeTvk7BeWzGwLSgfw6Egr9k2QjG2lqVM",
       authDomain: "safety-net-check-in.firebaseapp.com",
@@ -178,19 +283,9 @@
       measurementId: "G-T0622DTKSK"
     };
 
-    /* -----------------------------
-       BACK TO MENU
-    ----------------------------- */
-    function goBack() {
-      formContainer.style.display = "none";
-      menu.style.display = "block";
-      form.innerHTML = "";
-      title.textContent = "";
-    }
-
-    /* -----------------------------
-       SAFETY-NET FORM (UPDATED)
-    ----------------------------- */
+    /* ---------------------------------------------------
+       SAFETY-NET FORM
+    --------------------------------------------------- */
     function loadSafetyNet() {
       title.textContent = "Safety-Net Check-In";
 
@@ -213,41 +308,39 @@
         <button type="submit">Submit</button>
       `;
 
-      // Show/hide "Other" field
       setTimeout(() => {
-        const reasonSelect = document.getElementById("reasonSelect");
-        const reasonOther = document.getElementById("reasonOther");
+        const sel = document.getElementById("reasonSelect");
+        const other = document.getElementById("reasonOther");
 
-        reasonSelect.addEventListener("change", () => {
-          if (reasonSelect.value === "other") {
-            reasonOther.style.display = "block";
-            reasonOther.required = true;
-          } else {
-            reasonOther.style.display = "none";
-            reasonOther.required = false;
-            reasonOther.value = "";
-          }
+        sel.addEventListener("change", () => {
+          other.style.display = sel.value === "other" ? "block" : "none";
+          other.required = sel.value === "other";
         });
       }, 50);
 
       initFirebase("safetynet", SAFETY_NET_CONFIG);
+      showScreen(formContainer);
     }
 
-    /* -----------------------------
+    /* ---------------------------------------------------
        CLINIC FORM
-    ----------------------------- */
+    --------------------------------------------------- */
     function loadClinic() {
       title.textContent = "Clinic Check-In";
+
       form.innerHTML = `
         <label>Name</label>
         <input id="guestName" required>
 
-        <label>Dog or Cat</label>
+        <label>Animal Type</label>
         <select id="animal" required>
           <option value="">Select</option>
           <option>Dog</option>
           <option>Cat</option>
+          <option value="other">Other</option>
         </select>
+
+        <input id="animalOther" placeholder="Please describe..." style="display:none; margin-top:-10px;">
 
         <label>Breed</label>
         <input id="breed" required>
@@ -261,12 +354,23 @@
         <button type="submit">Submit</button>
       `;
 
+      setTimeout(() => {
+        const animal = document.getElementById("animal");
+        const other = document.getElementById("animalOther");
+
+        animal.addEventListener("change", () => {
+          other.style.display = animal.value === "other" ? "block" : "none";
+          other.required = animal.value === "other";
+        });
+      }, 50);
+
       initFirebase("clinic", CLINIC_CONFIG);
+      showScreen(formContainer);
     }
 
-    /* -----------------------------
+    /* ---------------------------------------------------
        ADOPTIONS FORM
-    ----------------------------- */
+    --------------------------------------------------- */
     function loadAdoptions() {
       title.textContent = "Adoptions Check-In";
 
@@ -286,25 +390,22 @@
       `;
 
       initFirebase("adoptions", ADOPTIONS_CONFIG);
+      showScreen(formContainer);
     }
 
-    /* -----------------------------
-       INITIALIZE FIREBASE
-    ----------------------------- */
+    /* ---------------------------------------------------
+       FIREBASE INIT
+    --------------------------------------------------- */
     function initFirebase(appName, config) {
-      menu.style.display = "none";
-      formContainer.style.display = "block";
-
       if (activeApp) activeApp.delete?.();
-
       activeApp = firebase.initializeApp(config, appName);
       db = activeApp.database();
       checkinsRef = db.ref("checkins");
     }
 
-    /* -----------------------------
+    /* ---------------------------------------------------
        FORM SUBMISSION
-    ----------------------------- */
+    --------------------------------------------------- */
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -314,27 +415,32 @@
         status: "waiting"
       };
 
-      // SAFETY-NET reason handling
+      // Safety-Net
       const reasonSelect = document.getElementById("reasonSelect");
       const reasonOther = document.getElementById("reasonOther");
-
       if (reasonSelect) {
         data.reason = reasonSelect.value === "other"
           ? reasonOther.value.trim()
           : reasonSelect.value;
       }
 
-      // Clinic fields
-      if (document.getElementById("animal")) {
-        data.animal = document.getElementById("animal").value;
+      // Clinic
+      const animal = document.getElementById("animal");
+      if (animal) {
+        const animalOther = document.getElementById("animalOther");
+        data.animal = animal.value === "other"
+          ? animalOther.value.trim()
+          : animal.value;
+
         data.breed = document.getElementById("breed").value.trim();
         data.weight = document.getElementById("weight").value.trim();
         data.reason = document.getElementById("reason").value.trim();
       }
 
       // Adoptions
-      if (document.getElementById("interest")) {
-        data.interest = document.getElementById("interest").value;
+      const interest = document.getElementById("interest");
+      if (interest) {
+        data.interest = interest.value;
       }
 
       await checkinsRef.push(data);
