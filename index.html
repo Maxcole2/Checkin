@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Safety-Net">
-  
-  <title>Safety-Net Check-In</title>
+  <meta name="apple-mobile-web-app-title" content="Check-In System">
+
+  <title>Check-In System</title>
 
   <style>
     :root {
@@ -65,7 +65,7 @@
       text-transform: uppercase;
     }
 
-    input {
+    input, select {
       width: 100%;
       padding: 16px;
       margin-bottom: 20px;
@@ -89,6 +89,7 @@
       font-weight: bold;
       text-transform: uppercase;
       cursor: pointer;
+      margin-bottom: 15px;
     }
 
     #toast {
@@ -110,17 +111,18 @@
 
 <body>
 
-  <div class="container">
-    <h1>Safety-Net Check-In</h1>
-    <form id="checkin-form">
-      <label for="guestName">Name</label>
-      <input type="text" id="guestName" placeholder="Enter guest name" required>
+  <!-- MENU -->
+  <div class="container" id="menu">
+    <h1>Select Check-In Type</h1>
+    <button onclick="loadSafetyNet()">Safety-Net Check-In</button>
+    <button onclick="loadClinic()">Clinic Check-In</button>
+  </div>
 
-      <label for="reason">Reason for Visit</label>
-      <input type="text" id="reason" placeholder="Enter reason" required>
-
-      <button type="submit">Submit</button>
-    </form>
+  <!-- FORM -->
+  <div class="container" id="form-container" style="display:none;">
+    <button style="margin-bottom:20px;" onclick="goBack()">⬅ Back to Menu</button>
+    <h1 id="form-title"></h1>
+    <form id="checkin-form"></form>
   </div>
 
   <div id="toast">Check-in submitted!</div>
@@ -130,7 +132,21 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
   <script>
-    const firebaseConfig = {
+    let activeApp = null;
+    let db = null;
+    let checkinsRef = null;
+
+    const toast = document.getElementById("toast");
+    const menu = document.getElementById("menu");
+    const formContainer = document.getElementById("form-container");
+    const form = document.getElementById("checkin-form");
+    const title = document.getElementById("form-title");
+
+    /* -----------------------------
+       FIREBASE CONFIGS (SEPARATE)
+    ----------------------------- */
+
+    const SAFETY_NET_CONFIG = {
       apiKey: "AIzaSyBmeTvk7BeWzGwLSgfw6Egr9k2QjG2lqVM",
       authDomain: "safety-net-check-in.firebaseapp.com",
       databaseURL: "https://safety-net-check-in-default-rtdb.firebaseio.com/",
@@ -140,26 +156,118 @@
       appId: "1:1074532631627:web:ce5ac68b9195b25c4ef9ce"
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const checkinsRef = db.ref("checkins");
+    const CLINIC_CONFIG = {
+      apiKey: "AIzaSyCSSL6biFrQyQKUm-LeUMW2LQsvaq5TXmY",
+      authDomain: "clinic-pager.firebaseapp.com",
+      databaseURL: "https://clinic-pager-default-rtdb.firebaseio.com",
+      projectId: "clinic-pager",
+      storageBucket: "clinic-pager.firebasestorage.app",
+      messagingSenderId: "123711538285",
+      appId: "1:123711538285:web:54a06cde74d008cb11ab64",
+      measurementId: "G-7DTQ5FNX3Q"
+    };
 
-    const toast = document.getElementById("toast");
+    /* -----------------------------
+       BACK TO MENU
+    ----------------------------- */
+    function goBack() {
+      formContainer.style.display = "none";
+      menu.style.display = "block";
+      form.innerHTML = "";
+      title.textContent = "";
+    }
 
-    document.getElementById("checkin-form").addEventListener("submit", async (e) => {
+    /* -----------------------------
+       LOAD SAFETY-NET FORM
+    ----------------------------- */
+    function loadSafetyNet() {
+      title.textContent = "Safety-Net Check-In";
+      form.innerHTML = `
+        <label>Name</label>
+        <input id="guestName" required>
+
+        <label>Reason for Visit</label>
+        <input id="reason" required>
+
+        <button type="submit">Submit</button>
+      `;
+
+      initFirebase("safetynet", SAFETY_NET_CONFIG);
+    }
+
+    /* -----------------------------
+       LOAD CLINIC FORM
+    ----------------------------- */
+    function loadClinic() {
+      title.textContent = "Clinic Check-In";
+      form.innerHTML = `
+        <label>Name</label>
+        <input id="guestName" required>
+
+        <label>Dog or Cat</label>
+        <select id="animal" required>
+          <option value="">Select</option>
+          <option>Dog</option>
+          <option>Cat</option>
+        </select>
+
+        <label>Breed</label>
+        <input id="breed" required>
+
+        <label>Weight (lbs)</label>
+        <input id="weight" type="number" min="0" required>
+
+        <label>Reason for Visit</label>
+        <input id="reason" required>
+
+        <button type="submit">Submit</button>
+      `;
+
+      initFirebase("clinic", CLINIC_CONFIG);
+    }
+
+    /* -----------------------------
+       INITIALIZE CORRECT FIREBASE
+    ----------------------------- */
+    function initFirebase(appName, config) {
+      menu.style.display = "none";
+      formContainer.style.display = "block";
+
+      if (activeApp) activeApp.delete?.();
+
+      activeApp = firebase.initializeApp(config, appName);
+      db = activeApp.database();
+      checkinsRef = db.ref("checkins");
+    }
+
+    /* -----------------------------
+       FORM SUBMISSION
+    ----------------------------- */
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      await checkinsRef.push({
+      const data = {
         time: Date.now(),
         guestName: document.getElementById("guestName").value.trim(),
         reason: document.getElementById("reason").value.trim(),
         status: "waiting"
-      });
+      };
+
+      // Add clinic-only fields if present
+      if (document.getElementById("animal")) {
+        data.animal = document.getElementById("animal").value;
+        data.breed = document.getElementById("breed").value.trim();
+        data.weight = document.getElementById("weight").value.trim();
+      }
+
+      await checkinsRef.push(data);
 
       toast.classList.add("show");
       setTimeout(() => toast.classList.remove("show"), 2000);
-      e.target.reset();
+
+      form.reset();
     });
   </script>
+
 </body>
 </html>
