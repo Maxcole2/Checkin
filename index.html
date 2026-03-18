@@ -86,6 +86,9 @@
       position: absolute;
       width: 90%;
       max-width: 400px;
+      /* Allow scrolling inside the form if it gets too tall */
+      max-height: 90vh; 
+      overflow-y: auto;
       background: rgba(15, 30, 45, 0.78);
       backdrop-filter: blur(12px);
       padding: 40px;
@@ -93,13 +96,15 @@
       text-align: left;
       border: 1px solid rgba(238, 131, 94, 0.25);
       box-shadow: 0 15px 45px rgba(0, 0, 0, 0.55);
-      overflow: hidden;
       opacity: 0;
       transform: translateX(20px);
       pointer-events: none;
       transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
       z-index: 10;
     }
+
+    /* Hide scrollbar for cleaner look */
+    .screen::-webkit-scrollbar { width: 0px; }
 
     .screen.active {
       opacity: 1;
@@ -131,6 +136,7 @@
       background: var(--bg-dark);
       color: white;
       font-size: 18px;
+      box-sizing: border-box;
     }
 
     /* PRC BUTTONS */
@@ -187,6 +193,7 @@
       margin-bottom: 10px;
       position: relative;
       text-align: left;
+      box-sizing: border-box;
     }
 
     .dropdown-header::after {
@@ -222,6 +229,58 @@
       width: 100%;
     }
 
+    /* PANTRY SPECIFIC STYLES */
+    .waiver-box {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 12px;
+      line-height: 1.4;
+      color: #b5c6d6;
+      max-height: 150px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+      border: 1px solid var(--prc-blue);
+    }
+
+    .pet-inputs {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .signature-wrapper {
+      background: #fff;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      position: relative;
+      border: 2px solid #2d4a66;
+      overflow: hidden;
+    }
+
+    #signature-pad {
+      width: 100%;
+      height: 150px;
+      display: block;
+      touch-action: none; /* Crucial for iOS/iPad touch drawing */
+      cursor: crosshair;
+    }
+
+    .clear-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: rgba(0,0,0,0.1);
+      color: var(--prc-blue);
+      border: none;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 2;
+    }
+
     #toast {
       position: fixed;
       bottom: 50px;
@@ -242,11 +301,9 @@
 
 <body>
 
-  <!-- ORANGE SWEEP EFFECTS -->
   <div id="transition-sweep"></div>
   <div id="transition-sweep-2"></div>
 
-  <!-- MENU SCREEN -->
   <div class="screen active" id="menu">
     <h1>Select Check-In Type</h1>
     <button class="prc-option" onclick="loadSafetyNet()">Safety-Net Check-In</button>
@@ -254,7 +311,6 @@
     <button class="prc-option" onclick="loadAdoptions()">Adoptions</button>
   </div>
 
-  <!-- FORM SCREEN -->
   <div class="screen" id="form-container">
     <button class="prc-option" onclick="goBack()">⬅ Back to Menu</button>
     <h1 id="form-title"></h1>
@@ -263,7 +319,6 @@
 
   <div id="toast">Check-in submitted!</div>
 
-  <!-- Firebase 8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -277,6 +332,11 @@
     const formContainer = document.getElementById("form-container");
     const form = document.getElementById("checkin-form");
     const title = document.getElementById("form-title");
+
+    // Signature Pad Variables
+    let canvas, ctx;
+    let isDrawing = false;
+    let hasSigned = false;
 
     function runSweep() {
       const s1 = document.getElementById("transition-sweep");
@@ -295,6 +355,8 @@
       screens.forEach(s => s.classList.remove("active"));
       setTimeout(() => {
         screenToShow.classList.add("active");
+        // Scroll to top when showing a new screen
+        screenToShow.scrollTop = 0;
       }, 150);
     }
 
@@ -369,12 +431,97 @@
       });
     }
 
+    // --- SIGNATURE PAD LOGIC ---
+    function initSignature() {
+      canvas = document.getElementById('signature-pad');
+      if (!canvas) return;
+      ctx = canvas.getContext('2d');
+      hasSigned = false;
+
+      // Make canvas resolution match its displayed size for crisp lines
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = '#254F71';
+
+      // Mouse Events
+      canvas.addEventListener('mousedown', startPosition);
+      canvas.addEventListener('mouseup', endPosition);
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('mouseout', endPosition); // Stop if cursor leaves
+
+      // Touch Events (for iPhone/iPad)
+      canvas.addEventListener('touchstart', startPositionTouch, { passive: false });
+      canvas.addEventListener('touchend', endPosition);
+      canvas.addEventListener('touchmove', drawTouch, { passive: false });
+    }
+
+    function startPosition(e) {
+      isDrawing = true;
+      draw(e);
+    }
+    
+    function startPositionTouch(e) {
+      e.preventDefault(); // Prevents screen from scrolling
+      isDrawing = true;
+      drawTouch(e);
+    }
+
+    function endPosition() {
+      isDrawing = false;
+      ctx.beginPath();
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      hasSigned = true;
+    }
+
+    function drawTouch(e) {
+      if (!isDrawing) return;
+      e.preventDefault(); // Prevents screen from scrolling
+      const rect = canvas.getBoundingClientRect();
+      const touch = e.touches[0];
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      hasSigned = true;
+    }
+
+    window.clearSignature = function() {
+      if(!canvas || !ctx) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      hasSigned = false;
+    }
+    // ----------------------------
+
     function loadSafetyNet() {
       title.textContent = "Safety-Net Check-In";
 
       form.innerHTML = `
         <label>Name</label>
         <input id="guestName" required>
+
+        <label>Phone Number</label>
+        <input id="guestPhone" type="tel" required>
+
+        <label>Email Address</label>
+        <input id="guestEmail" type="email" required>
 
         <label>Reason for Visit</label>
         <div class="dropdown-header" id="sn-header">Select...</div>
@@ -389,6 +536,52 @@
 
         <input id="reasonOther" placeholder="Please describe..." style="display:none; margin-top:10px;">
 
+        <div id="pantry-section" style="display:none; margin-top: 20px;">
+          <div class="waiver-box">
+            All food distributed by Pet Resource Center “PRC” Food Pantry is obtained through donations. 
+            Some food/supplies may be past expiration or opened. By accepting food/supplies from PRC 
+            Food Pantry and feeding it to their pets, recipients acknowledge that they are aware of the risk 
+            involved in accepting the pet food/supplies provided and will not hold PRC Food Pantry or its 
+            affiliates responsible should any harm or illness to their pets as a result of feeding/giving them 
+            donated food/supplies. PRC Food Pantry will never knowingly distribute food/supplies that has 
+            been recalled, although recalls may occur after donated food/supplies has been distributed. 
+            Once donated food/supplies are in the possession of the recipient, it is the recipient's 
+            responsibility to check and track for recalls. PRC Food Pantry and its affiliates are not 
+            responsible for recalled food/supplies.<br><br>
+            I agree no-one in the household is to resell food or supplies provided by PRC Food Pantry. If 
+            PRC Food Pantry suspects or gains knowledge that pet food or supplies were resold, the 
+            household and all members involved will be permanently banned from future aid.<br><br>
+            By signing below, I acknowledge I have carefully read and fully understand this “Waiver and 
+            Release of Liability”. I agree as well as all household members, friends and family, to hold 
+            harmless and waive any and all rights to bring on legal action against PRC Food Pantry, its 
+            affiliates, staff, volunteers, and benefactors or hold the aforementioned legally liable in the 
+            unfortunate event the pet(s) become ill, injured, suffers temporary or permanent disability, 
+            death or any other issues that should arise from feeding/using donated food/supplies from PRC 
+            Food Pantry. I also agree to be financially responsible for any costs incurred as a result of 
+            feeding/using my pet(s) food/supplies donated by PRC Food Pantry.
+          </div>
+
+          <div class="pet-inputs">
+            <div style="flex: 1;">
+              <label>How many dogs?</label>
+              <input type="number" id="dogCount" min="0" value="0">
+            </div>
+            <div style="flex: 1;">
+              <label>How many cats?</label>
+              <input type="number" id="catCount" min="0" value="0">
+            </div>
+          </div>
+
+          <label>Address</label>
+          <input id="guestAddress" placeholder="123 Main St, City, State, Zip">
+
+          <label>Signature (Required)</label>
+          <div class="signature-wrapper">
+            <button type="button" class="clear-btn" onclick="clearSignature()">Clear</button>
+            <canvas id="signature-pad"></canvas>
+          </div>
+        </div>
+
         <button class="submit-btn" type="submit">Submit</button>
       `;
 
@@ -402,12 +595,21 @@
           (value) => {
             selectedReason = value;
             const otherField = document.getElementById("reasonOther");
+            const pantrySection = document.getElementById("pantry-section");
+
             if (value === "Other") {
               otherField.style.display = "block";
               otherField.required = true;
             } else {
               otherField.style.display = "none";
               otherField.required = false;
+            }
+
+            if (value === "Pet Pantry") {
+              pantrySection.style.display = "block";
+              setTimeout(initSignature, 50); 
+            } else {
+              pantrySection.style.display = "none";
             }
           }
         );
@@ -416,14 +618,35 @@
       form.onsubmit = async (e) => {
         e.preventDefault();
 
+        if (selectedReason === "Pet Pantry") {
+          const addressVal = document.getElementById("guestAddress").value.trim();
+          if (!addressVal) {
+            alert("Please enter your address.");
+            return;
+          }
+          if (!hasSigned) {
+            alert("Please provide a signature to accept the waiver.");
+            return;
+          }
+        }
+
         const data = {
           time: Date.now(),
           guestName: document.getElementById("guestName").value.trim(),
+          phone: document.getElementById("guestPhone").value.trim(),
+          email: document.getElementById("guestEmail").value.trim(),
           status: "waiting",
           reason: selectedReason === "Other"
             ? document.getElementById("reasonOther").value.trim()
             : selectedReason
         };
+
+        if (selectedReason === "Pet Pantry") {
+          data.dogs = document.getElementById("dogCount").value;
+          data.cats = document.getElementById("catCount").value;
+          data.address = document.getElementById("guestAddress").value.trim();
+          data.signatureData = canvas.toDataURL("image/png");
+        }
 
         await checkinsRef.push(data);
 
@@ -431,6 +654,7 @@
         setTimeout(() => toast.classList.remove("show"), 2000);
 
         form.reset();
+        if(canvas) window.clearSignature();
       };
 
       initFirebase("safetynet", SAFETY_NET_CONFIG);
@@ -443,6 +667,12 @@
       form.innerHTML = `
         <label>Name</label>
         <input id="guestName" required>
+
+        <label>Phone Number</label>
+        <input id="guestPhone" type="tel" required>
+
+        <label>Email Address</label>
+        <input id="guestEmail" type="email" required>
 
         <label>Animal Type</label>
         <div class="dropdown-header" id="animal-header">Select...</div>
@@ -495,6 +725,8 @@
         const data = {
           time: Date.now(),
           guestName: document.getElementById("guestName").value.trim(),
+          phone: document.getElementById("guestPhone").value.trim(),
+          email: document.getElementById("guestEmail").value.trim(),
           status: "waiting",
           animal: selectedAnimal === "Other"
             ? document.getElementById("animalOther").value.trim()
@@ -522,6 +754,12 @@
       form.innerHTML = `
         <label>Name</label>
         <input id="guestName" required>
+
+        <label>Phone Number</label>
+        <input id="guestPhone" type="tel" required>
+
+        <label>Email Address</label>
+        <input id="guestEmail" type="email" required>
 
         <label>I'm interested in</label>
         <div class="dropdown-header" id="interest-header">Select...</div>
@@ -555,6 +793,8 @@
         const data = {
           time: Date.now(),
           guestName: document.getElementById("guestName").value.trim(),
+          phone: document.getElementById("guestPhone").value.trim(),
+          email: document.getElementById("guestEmail").value.trim(),
           status: "waiting",
           interest: selectedInterest
         };
@@ -573,6 +813,4 @@
   </script>
 
 </body>
-</html>
-
 
