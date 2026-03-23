@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Check-In System">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Check-In System" />
 
   <title>Check-In System | Pet Resource Center</title>
 
@@ -13,7 +13,7 @@
     :root {
       --prc-blue: #254F71;
       --prc-orange: #EE835E;
-      --bg-dark: #070a10; 
+      --bg-dark: #070a10;
       --text-light: #e0e0e0;
       --sign-blue: #1b3650;
       --building-base: #0a111a;
@@ -62,16 +62,49 @@
       100% { filter: drop-shadow(0px 0px 30px rgba(238, 131, 94, 0.7)); transform: rotate(-5deg); }
     }
 
-    /* --- FOOTHILLS --- */
-    .foothills {
+    /* --- CONSTELLATIONS --- */
+    .constellations {
       position: absolute;
-      bottom: 25vh; 
+      top: 18%;
+      right: 6%;
+      width: 280px;
+      height: 120px;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.85;
+    }
+
+    .constellation-line {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.18);
+      stroke-width: 1;
+      stroke-dasharray: 2 3;
+    }
+
+    /* Stars / facial highlights: no animation, just a soft glow */
+    .constellation-star {
+      fill: #fffdf0;
+      filter: drop-shadow(0 0 8px rgba(255, 223, 160, 0.95));
+      opacity: 0.98;
+    }
+
+    /* Subtle outline for facial shapes (thin, faint) */
+    .face-outline {
+      fill: none;
+      stroke: rgba(255,255,255,0.12);
+      stroke-width: 0.9;
+    }
+
+    /* --- CITY BACKGROUND (Replaced Foothills) --- */
+    .city-background {
+      position: absolute;
+      bottom: 22vh;
       left: 0;
       width: 100%;
-      height: 40vh;
+      height: 45vh;
       z-index: 1;
       pointer-events: none;
-      opacity: 0.6;
+      opacity: 0.85;
     }
 
     /* --- PERFECT VECTOR SKYLINE --- */
@@ -95,28 +128,32 @@
     .cargo-train {
       animation: trainDrive 45s linear infinite;
     }
-    
+
     @keyframes trainDrive {
       0% { transform: translateX(-1500px); }
       40% { transform: translateX(1800px); }
       100% { transform: translateX(1800px); }
     }
 
-    .dennys-3d {
-      transform: none;
-    }
-
-    /* --- MORGAN SQUARE FOUNTAIN ANIMATION --- */
+    /* --- ANIMATIONS FOR LANDMARKS --- */
     @keyframes fountainSplash {
       0%, 100% { opacity: 0.4; filter: drop-shadow(0 0 2px #a0d8ef); }
-      50% { opacity: 0.8; filter: drop-shadow(0 0 6px #a0d8ef); }
+      50% { opacity: 0.9; filter: drop-shadow(0 0 8px #a0d8ef); }
     }
     .fountain-water path {
-      animation: fountainSplash 2s infinite ease-in-out;
+      animation: fountainSplash 1.5s infinite ease-in-out;
     }
     .fountain-water path:nth-child(even) {
-      animation-delay: 1s;
+      animation-delay: 0.75s;
     }
+
+    @keyframes beaconSpin {
+      0%, 100% { opacity: 0.1; }
+      50% { opacity: 0.8; }
+    }
+    .beacon-flash { animation: beaconSpin 3s infinite; }
+    .beacon-spin-left { animation: beaconSpin 3s infinite; animation-delay: 0s; }
+    .beacon-spin-right { animation: beaconSpin 3s infinite; animation-delay: 1.5s; }
 
     /* --- FOREGROUND & FIREFLIES --- */
     .park-foreground {
@@ -125,7 +162,7 @@
       z-index: 3; pointer-events: none;
       background: linear-gradient(to top, #020508, #050a12 60%, transparent);
     }
-    
+
     .fireflies {
       position: absolute; bottom: 0; left: 0; width: 100%; height: 35vh;
       z-index: 5; pointer-events: none;
@@ -147,14 +184,14 @@
   /* --- WARM & WELCOMING ILLUMINATED SIGN --- */
     .monument-sign {
       position: absolute;
-      bottom: 5vh;
-      right: 6vw;
+      bottom: 55vh;
+      right: 85vw;
       width: 280px;
-      z-index: 10;
+      z-index: 50;
       display: flex;
       flex-direction: column;
       align-items: center;
-      transform: perspective(1000px) rotateY(-12deg);
+      transform: scale(0.55) perspective(1000px);
     }
 
     .monument-sign::before {
@@ -176,15 +213,15 @@
 
     .sign-body {
       width: 100%;
-      background: rgba(27, 54, 80, 0.85); 
+      background: rgba(27, 54, 80, 0.85);
       backdrop-filter: blur(10px);
-      border: 2px solid rgba(238, 131, 94, 0.5); 
-      border-radius: 40px; 
+      border: 2px solid rgba(238, 131, 94, 0.5);
+      border-radius: 40px;
       padding: 30px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      box-shadow: 
+      box-shadow:
         0 15px 35px rgba(0,0,0,0.5),
         inset 0 0 20px rgba(238, 131, 94, 0.1);
     }
@@ -209,6 +246,7 @@
     @media (max-width: 900px) {
       .monument-sign { right: 50%; transform: translateX(50%) scale(0.85) perspective(1000px) rotateY(-10deg) rotateX(4deg); bottom: 1vh; }
       .skyline-container { bottom: 18vh; height: 35vh; }
+      .constellations { right: 50%; transform: translateX(50%); top: 12%; }
     }
   </style>
 </head>
@@ -217,16 +255,123 @@
 
   <div class="sc-moon"></div>
 
-  <div class="foothills">
-    <svg viewBox="0 0 1200 300" preserveAspectRatio="none" style="width:100%; height:100%;">
-      <path d="M0,300 L0,150 Q150,50 300,120 T650,80 T1000,140 L1200,110 L1200,300 Z" fill="#060c14" />
-      <path d="M0,300 L0,200 Q200,110 450,190 T850,140 T1200,210 L1200,300 Z" fill="#0a121e" />
+<!-- REPLACE your existing .constellations block with this full-screen version -->
+<div class="constellations" aria-hidden="true">
+  <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice"
+       style="width:100%; height:100%;" xmlns="http://www.w3.org/2000/svg">
+
+    <!-- Background: subtle gradient to blend with page -->
+    <defs>
+      <radialGradient id="skyGrad" cx="50%" cy="20%" r="80%">
+        <stop offset="0%" stop-color="rgba(255,255,255,0.02)"/>
+        <stop offset="60%" stop-color="rgba(255,255,255,0.00)"/>
+      </radialGradient>
+
+      <!-- small reusable star shape -->
+      <g id="star">
+        <circle cx="0" cy="0" r="1" />
+      </g>
+    </defs>
+
+    <!-- full-viewport rect to ensure stars span entire area -->
+    <rect x="0" y="0" width="1920" height="1080" fill="url(#skyGrad)" opacity="0.02"/>
+
+    <!-- DENSE STAR FIELD: many small stars spread across the whole view -->
+    <g id="star-field" fill="#fffdf0" opacity="0.95">
+      <!-- A representative, evenly distributed set of stars; add or remove lines to change density -->
+      <circle cx="30"  cy="40"  r="0.9" class="constellation-star"/>
+      <circle cx="80"  cy="120" r="0.8" class="constellation-star"/>
+      <circle cx="140" cy="30"  r="1.1" class="constellation-star"/>
+      <circle cx="200" cy="200" r="0.7" class="constellation-star"/>
+      <circle cx="260" cy="90"  r="0.9" class="constellation-star"/>
+      <circle cx="320" cy="60"  r="1.0" class="constellation-star"/>
+      <circle cx="380" cy="150" r="0.8" class="constellation-star"/>
+      <circle cx="440" cy="20"  r="1.2" class="constellation-star"/>
+      <circle cx="500" cy="110" r="0.9" class="constellation-star"/>
+      <circle cx="560" cy="70"  r="1.0" class="constellation-star"/>
+      <circle cx="620" cy="30"  r="0.8" class="constellation-star"/>
+      <circle cx="680" cy="180" r="1.1" class="constellation-star"/>
+      <circle cx="740" cy="95"  r="0.9" class="constellation-star"/>
+      <circle cx="800" cy="40"  r="1.0" class="constellation-star"/>
+      <circle cx="860" cy="140" r="0.7" class="constellation-star"/>
+      <circle cx="920" cy="60"  r="1.2" class="constellation-star"/>
+      <circle cx="980" cy="20"  r="0.9" class="constellation-star"/>
+      <circle cx="1040" cy="130" r="1.0" class="constellation-star"/>
+      <circle cx="1100" cy="80" r="0.8" class="constellation-star"/>
+      <circle cx="1160" cy="40" r="1.1" class="constellation-star"/>
+      <circle cx="1220" cy="170" r="0.9" class="constellation-star"/>
+      <circle cx="1280" cy="50" r="1.0" class="constellation-star"/>
+      <circle cx="1340" cy="110" r="0.8" class="constellation-star"/>
+      <circle cx="1400" cy="30" r="1.2" class="constellation-star"/>
+      <circle cx="1460" cy="150" r="0.9" class="constellation-star"/>
+      <circle cx="1520" cy="70" r="1.0" class="constellation-star"/>
+      <circle cx="1580" cy="20" r="0.8" class="constellation-star"/>
+      <circle cx="1640" cy="120" r="1.1" class="constellation-star"/>
+      <circle cx="1700" cy="60" r="0.9" class="constellation-star"/>
+      <circle cx="1760" cy="40" r="1.0" class="constellation-star"/>
+      <circle cx="1820" cy="100" r="0.8" class="constellation-star"/>
+
+      <!-- a few brighter, twinkling stars scattered across the sky -->
+      <circle cx="240" cy="300" r="2.6" class="constellation-star bright"/>
+      <circle cx="720" cy="260" r="2.8" class="constellation-star bright"/>
+      <circle cx="1320" cy="220" r="2.4" class="constellation-star bright"/>
+      <circle cx="1680" cy="320" r="2.2" class="constellation-star bright"/>
+    </g>
+
+    <!-- Big Dipper (Ursa Major) - upper-left -->
+    <g id="big-dipper" transform="translate(140,80) scale(1.0)">
+      <path class="constellation-line" d="M20 20 L70 10 L120 25 L170 55 L210 95 L250 125 L290 145" />
+      <circle cx="20"  cy="20"  r="3.6" class="constellation-star bright"/>
+      <circle cx="70"  cy="10"  r="3.2" class="constellation-star bright"/>
+      <circle cx="120" cy="25"  r="3.0" class="constellation-star bright"/>
+      <circle cx="170" cy="55"  r="3.4" class="constellation-star bright"/>
+      <circle cx="210" cy="95"  r="3.8" class="constellation-star bright"/>
+      <circle cx="250" cy="125" r="3.2" class="constellation-star bright"/>
+      <circle cx="290" cy="145" r="3.6" class="constellation-star bright"/>
+    </g>
+
+    <!-- Little Dipper (Ursa Minor) - upper-right -->
+    <g id="little-dipper" transform="translate(1180,60) scale(0.95)">
+      <path class="constellation-line" d="M20 40 L60 30 L100 20 L140 18 L180 28 L220 50 L260 90" />
+      <circle cx="20"  cy="40"  r="2.6" class="constellation-star bright"/>
+      <circle cx="60"  cy="30"  r="2.4" class="constellation-star bright"/>
+      <circle cx="100" cy="20"  r="2.2" class="constellation-star bright"/>
+      <circle cx="140" cy="18"  r="2.0" class="constellation-star bright"/>
+      <circle cx="180" cy="28"  r="2.4" class="constellation-star bright"/>
+      <circle cx="220" cy="50"  r="2.8" class="constellation-star bright"/>
+      <circle cx="260" cy="90"  r="4.2" class="constellation-star bright polaris"/>
+    </g>
+
+  </svg>
+</div>
+
+
+  <!-- DEEP BACKGROUND CITYSCAPE -->
+  <div class="city-background">
+    <svg viewBox="0 0 1200 400" preserveAspectRatio="none" style="width:100%; height:100%;">
+      <!-- Layer 1: Farthest, darkest silhouette -->
+      <path d="M0,400 L0,200 L40,200 L40,150 L80,150 L80,220 L150,220 L150,180 L190,180 L190,120 L230,120 L230,250 L300,250 L300,160 L350,160 L350,200 L420,200 L420,100 L470,100 L470,230 L550,230 L550,140 L600,140 L600,190 L680,190 L680,110 L740,110 L740,220 L800,220 L800,170 L860,170 L860,260 L920,260 L920,130 L970,130 L970,200 L1050,200 L1050,150 L1100,150 L1100,240 L1160,240 L1160,180 L1200,180 L1200,400 Z" fill="#04080e" />
+
+      <!-- Layer 2: Midground silhouette -->
+      <path d="M0,400 L0,280 L50,280 L50,220 L100,220 L100,300 L180,300 L180,250 L240,250 L240,200 L320,200 L320,270 L380,270 L380,210 L450,210 L450,280 L520,280 L520,180 L580,180 L580,290 L650,290 L650,230 L720,230 L720,270 L780,270 L780,200 L850,200 L850,310 L900,310 L900,250 L980,250 L980,220 L1060,220 L1060,290 L1120,290 L1120,260 L1200,260 L1200,400 Z" fill="#080e15" />
+
+      <!-- Abstract lit windows scattered in the background -->
+      <g fill="#ffcf70" opacity="0.3">
+         <rect x="60" y="240" width="3" height="3" /><rect x="70" y="250" width="3" height="3" />
+         <rect x="200" y="270" width="3" height="3" /><rect x="220" y="280" width="3" height="3" />
+         <rect x="340" y="220" width="3" height="3" /><rect x="350" y="240" width="3" height="3" />
+         <rect x="540" y="200" width="3" height="3" /><rect x="550" y="220" width="3" height="3" />
+         <rect x="800" y="230" width="3" height="3" /><rect x="820" y="250" width="3" height="3" />
+         <rect x="920" y="280" width="3" height="3" /><rect x="950" y="270" width="3" height="3" />
+         <rect x="1080" y="240" width="3" height="3" /><rect x="1100" y="260" width="3" height="3" />
+      </g>
     </svg>
   </div>
 
+  <!-- FOREGROUND SKYLINE & LANDMARKS -->
   <div class="skyline-container">
     <svg viewBox="0 0 1400 500" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
-      
+
       <rect x="0" y="300" width="1400" height="200" fill="url(#cityGlow)" opacity="0.3"/>
       <defs>
         <linearGradient id="cityGlow" x1="0" y1="0" x2="0" y2="1">
@@ -239,11 +384,47 @@
         </linearGradient>
       </defs>
 
-      <!-- Train Track -->
-      <line x1="0" y1="495" x2="1400" y2="495" stroke="#050a12" stroke-width="2" />
+      <!-- ================= MIDGROUND LANDMARKS ================= -->
 
-      <!-- Hub City Station (Far Background) -->
-      <g class="train-station" transform="translate(810, 440)">
+      <!-- Clock Tower (Masonic Temple) -->
+      <g id="clock-tower" transform="translate(620, 200)">
+        <rect x="10" y="80" width="60" height="215" fill="#0d1622" stroke="#1a2b40" stroke-width="1"/>
+        <polygon points="5,80 40,30 75,80" fill="#0a121e" stroke="#1a2b40" stroke-width="1"/>
+        
+        <!-- Clock Face -->
+        <circle cx="40" cy="95" r="16" fill="#050a12" stroke="#142233" stroke-width="2" />
+        <circle cx="40" cy="95" r="14" fill="#ffcf70" filter="drop-shadow(0 0 8px #ffcf70)" />
+        <circle cx="40" cy="95" r="10" fill="#fffdf0" />
+        <line x1="40" y1="95" x2="40" y2="86" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+        <line x1="40" y1="95" x2="48" y2="95" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+        
+        <!-- Architectural Details -->
+        <rect x="25" y="120" width="30" height="40" rx="15" fill="#0a121e" />
+        <rect x="25" y="180" width="30" height="40" rx="15" fill="#0a121e" />
+        <rect x="25" y="240" width="30" height="40" rx="15" fill="#0a121e" />
+      </g>
+
+      <!-- Denny's Corporate Tower -->
+      <g id="dennys-tower" transform="translate(560, 100)">
+        <rect x="0" y="0" width="120" height="395" fill="#070c14" stroke="#142233" stroke-width="2"/>
+        <!-- Glass facade lines -->
+        <path d="M 0,40 L 120,40 M 0,80 L 120,80 M 0,120 L 120,120 M 0,160 L 120,160 M 0,200 L 120,200 M 0,240 L 120,240 M 0,280 L 120,280 M 0,320 L 120,320 M 0,360 L 120,360" stroke="#0a121e" stroke-width="4" />
+        <path d="M 20,0 L 20,395 M 40,0 L 40,395 M 60,0 L 60,395 M 80,0 L 80,395 M 100,0 L 100,395" stroke="#0a121e" stroke-width="2" />
+        
+        <!-- Lit window blocks -->
+        <rect x="22" y="42" width="16" height="36" fill="var(--window-glow)" opacity="0.6" />
+        <rect x="82" y="122" width="16" height="36" fill="var(--window-glow)" opacity="0.8" />
+        <rect x="42" y="202" width="16" height="36" fill="var(--window-glow)" opacity="0.4" />
+        <rect x="62" y="282" width="16" height="36" fill="var(--window-glow)" opacity="0.7" />
+
+        <!-- Top Branding -->
+        <rect x="-5" y="0" width="130" height="35" fill="#0d1622" stroke="#1a2b40" stroke-width="1"/>
+        <rect x="0" y="5" width="120" height="25" fill="#050a12" />
+        <text x="60" y="23" font-family="sans-serif" font-weight="900" font-size="16" fill="#fdbb30" text-anchor="middle" letter-spacing="2" filter="drop-shadow(0 0 6px #fdbb30)">DENNY'S</text>
+      </g>
+
+      <!-- Hub City Station -->
+      <g class="train-station" transform="translate(820, 440)">
         <rect x="0" y="45" width="130" height="10" fill="#050a12" stroke="rgba(255,255,255,0.05)"/>
         <rect x="20" y="15" width="90" height="30" fill="#080e15" />
         <polygon points="10,15 120,15 110,0 20,0" fill="#0a121e" />
@@ -253,6 +434,11 @@
         <rect x="35" y="-12" width="60" height="12" fill="#020508" stroke="var(--prc-orange)" stroke-width="1"/>
         <text x="65" y="-3" font-family="sans-serif" font-weight="bold" font-size="8" fill="var(--prc-orange)" text-anchor="middle" filter="drop-shadow(0 0 3px rgba(238, 131, 94, 0.8))">HUB CITY</text>
       </g>
+
+      <!-- ================= TRAIN SYSTEM ================= -->
+      
+      <!-- Train Track -->
+      <line x1="0" y1="495" x2="1400" y2="495" stroke="#050a12" stroke-width="3" />
 
       <!-- Cargo Train -->
       <g class="cargo-train">
@@ -282,143 +468,174 @@
         </g>
       </g>
 
-    <!-- Compact FIFTH THIRD PARK: smaller footprint, raised field, and realistic downward stadium floodlights -->
-<g id="fifth-third-park" transform="translate(100,200) scale(0.40)" style="filter: drop-shadow(0 6px 14px rgba(0,0,0,0.55));">
-  <defs>
-    <!-- Field stripe gradient -->
-    <linearGradient id="ft_fieldStripe" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#1b5e20"/>
-      <stop offset="50%" stop-color="#2a7a2f"/>
-      <stop offset="100%" stop-color="#1b5e20"/>
-    </linearGradient>
+      <!-- ================= FOREGROUND LANDMARKS ================= -->
 
-    <!-- Bowl shading radial to give 3D depth -->
-    <radialGradient id="ft_bowlShade" cx="50%" cy="30%" r="70%">
-      <stop offset="0%" stop-color="#1b5e20" stop-opacity="0.0"/>
-      <stop offset="60%" stop-color="#071217" stop-opacity="0.35"/>
-      <stop offset="100%" stop-color="#00060a" stop-opacity="0.8"/>
-    </radialGradient>
+      <!-- The Beacon Drive-In -->
+      <g id="beacon" transform="translate(1050, 305)">
+        <!-- Main Diner Body -->
+        <rect x="0" y="130" width="200" height="55" fill="#050a12" stroke="#142233" stroke-width="2"/>
+        
+        <!-- Windows -->
+        <rect x="10" y="145" width="40" height="25" fill="var(--window-glow)" opacity="0.5"/>
+        <rect x="60" y="145" width="40" height="25" fill="var(--window-glow)" opacity="0.4"/>
+        <rect x="110" y="145" width="40" height="25" fill="var(--window-glow)" opacity="0.6"/>
+        <rect x="160" y="145" width="30" height="25" fill="var(--window-glow)" opacity="0.5"/>
 
-    <!-- Beam gradient (bright center to transparent) -->
-    <linearGradient id="ft_beamGrad" x1="0.5" y1="0" x2="0.5" y2="1">
-      <stop offset="0%" stop-color="#fffdf0" stop-opacity="0.98"/>
-      <stop offset="30%" stop-color="#fff6c8" stop-opacity="0.6"/>
-      <stop offset="100%" stop-color="#fff6c8" stop-opacity="0.0"/>
-    </linearGradient>
-
-    <!-- Soft glow for lamps -->
-    <filter id="ft_glow" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur stdDeviation="3.5" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-
-    <!-- Mask so beams only affect the field area (prevents beams hitting mountains) -->
-    <mask id="ft_fieldMask">
-      <rect x="-400" y="-300" width="800" height="800" fill="black"/>
-      <!-- white area = visible; field ellipse white to allow beams to show only on field -->
-      <ellipse cx="0" cy="72" rx="120" ry="44" fill="white"/>
-    </mask>
-  </defs>
-
-  <!-- Stadium mass (concrete ring) to minimize visible grass -->
-  <g transform="translate(0,0)">
-    <ellipse cx="0" cy="120" rx="220" ry="90" fill="#071018" />
-    <ellipse cx="0" cy="120" rx="200" ry="78" fill="#0b1620" />
-    <path d="M -180,120 A 180 80 0 0 1 180,120 L 180,150 A 180 80 0 0 0 -180,150 Z" fill="#0d1a22" stroke="rgba(255,255,255,0.02)"/>
-    <path d="M -150,86 A 160 56 0 0 1 150,86 L 150,100 A 160 56 0 0 0 -150,100 Z" fill="#08121a" opacity="0.95"/>
-  </g>
-
-  <!-- Seating tiers (compact, layered) -->
-  <g transform="translate(0,0)">
-    <path d="M -200,120 A 220 110 0 0 1 200,120 L 200,145 A 220 110 0 0 0 -200,145 Z" fill="#0b1620"/>
-    <path d="M -170,120 A 190 90 0 0 1 170,120 L 170,140 A 190 90 0 0 0 -170,140 Z" fill="#0e1b26"/>
-    <path d="M -140,120 A 160 70 0 0 1 140,120 L 140,135 A 160 70 0 0 0 -140,135 Z" fill="#12232f"/>
-    <g stroke="rgba(255,255,255,0.03)" stroke-width="0.8">
-      <path d="M -150,132 L 150,132" />
-      <path d="M -100,124 L 100,124" />
-    </g>
-    <g fill="#ffcf70" opacity="0.10">
-      <g transform="translate(-110,132)"><circle cx="0" cy="0" r="1.6"/><circle cx="22" cy="-1" r="1.6"/><circle cx="44" cy="-2" r="1.6"/></g>
-      <g transform="translate(-30,130)"><circle cx="0" cy="0" r="1.6"/><circle cx="22" cy="-1" r="1.6"/><circle cx="44" cy="-2" r="1.6"/></g>
-      <g transform="translate(50,130)"><circle cx="0" cy="0" r="1.6"/><circle cx="22" cy="-1" r="1.6"/><circle cx="44" cy="-2" r="1.6"/></g>
-    </g>
-  </g>
-
-  <!-- Raised, smaller field so it doesn't clip into the mountains -->
-  <g transform="translate(0,-28)">
-    <ellipse cx="0" cy="120" rx="120" ry="44" fill="#1b5e20" stroke="#0b3a10" stroke-width="2.5" />
-    <ellipse cx="0" cy="120" rx="104" ry="36" fill="url(#ft_fieldStripe)" opacity="0.98" />
-    <circle cx="0" cy="104" r="12" fill="#d9c9a3" stroke="#b89f7a" stroke-width="1.2"/>
-    <path d="M -8,104 L 0,92 L 8,104 L 0,116 Z" fill="#d9c9a3" stroke="#b89f7a" stroke-width="0.7"/>
-    <circle cx="0" cy="98" r="4.5" fill="#b89f7a" />
-  </g>
-
-  <!-- Four perimeter floodlight towers with downward angled arrays -->
-  <!-- Tower: top cluster with multiple lamps; beams are short, focused, and masked to field -->
-  <!-- Left-back tower -->
-  <g transform="translate(-160,10)">
-    <rect x="-4" y="-60" width="8" height="120" rx="2" fill="#0a0f12"/>
-    <g transform="translate(0,-64)">
-      <rect x="-28" y="-8" width="56" height="14" rx="3" fill="#0a121e" stroke="#142233" stroke-width="0.8"/>
-      <g filter="url(#ft_glow)">
-        <circle cx="-20" cy="0" r="2.8" fill="#fffdf0"/><circle cx="-8" cy="0" r="2.8" fill="#fffdf0"/>
-        <circle cx="4" cy="0" r="2.8" fill="#fffdf0"/><circle cx="16" cy="0" r="2.8" fill="#fffdf0"/>
+        <!-- Striped Awning -->
+        <path d="M -10,130 L 210,130 L 200,115 L 0,115 Z" fill="#fffdf0" />
+        <path d="M 0,115 L 10,130 L 30,130 L 20,115 Z" fill="#dd3333" />
+        <path d="M 40,115 L 50,130 L 70,130 L 60,115 Z" fill="#dd3333" />
+        <path d="M 80,115 L 90,130 L 110,130 L 100,115 Z" fill="#dd3333" />
+        <path d="M 120,115 L 130,130 L 150,130 L 140,115 Z" fill="#dd3333" />
+        <path d="M 160,115 L 170,130 L 190,130 L 180,115 Z" fill="#dd3333" />
+        
+        <!-- Tall Sign Pole -->
+        <rect x="150" y="0" width="12" height="130" fill="#020508" />
+        
+        <!-- Beacon Lighthouse Topper & Beams -->
+        <polygon points="156,-30 144,0 168,0" fill="#0d1622" />
+        <circle cx="156" cy="-35" r="6" fill="#fffdf0" filter="drop-shadow(0 0 10px #ffcf70)" class="beacon-flash"/>
+        
+        <path d="M 156,-35 L 50,-90 L 50,30 Z" fill="url(#ft_beamGrad)" opacity="0.6" style="mix-blend-mode: screen;" class="beacon-spin-left"/>
+        <path d="M 156,-35 L 260,-90 L 260,30 Z" fill="url(#ft_beamGrad)" opacity="0.6" style="mix-blend-mode: screen;" class="beacon-spin-right"/>
+        
+        <!-- The Beacon Sign Base -->
+        <ellipse cx="156" cy="40" rx="65" ry="35" fill="#0a121e" stroke="#dd3333" stroke-width="5" filter="drop-shadow(0 0 8px rgba(221,51,51,0.8))" />
+        <text x="156" y="32" font-family="sans-serif" font-weight="900" font-size="14" fill="#fffdf0" text-anchor="middle" letter-spacing="1" filter="drop-shadow(0 0 3px #fffdf0)">THE</text>
+        <text x="156" y="58" font-family="sans-serif" font-weight="900" font-size="24" fill="#dd3333" text-anchor="middle" letter-spacing="1" filter="drop-shadow(0 0 5px #dd3333)">BEACON</text>
       </g>
-    </g>
-    <!-- beams (angled toward field) -->
-    <g mask="url(#ft_fieldMask)" style="mix-blend-mode: screen;">
-      <path d="M -12,-6 L -90,120 L -40,120 Z" fill="url(#ft_beamGrad)" opacity="0.92"/>
-      <path d="M -4,-6 L -50,120 L -20,120 Z" fill="url(#ft_beamGrad)" opacity="0.88"/>
-    </g>
-  </g>
 
-  <!-- Right-back tower -->
-  <g transform="translate(160,10)">
-    <rect x="-4" y="-60" width="8" height="120" rx="2" fill="#0a0f12"/>
-    <g transform="translate(0,-64)">
-      <rect x="-28" y="-8" width="56" height="14" rx="3" fill="#0a121e" stroke="#142233" stroke-width="0.8"/>
-      <g filter="url(#ft_glow)">
-        <circle cx="-20" cy="0" r="2.8" fill="#fffdf0"/><circle cx="-8" cy="0" r="2.8" fill="#fffdf0"/>
-        <circle cx="4" cy="0" r="2.8" fill="#fffdf0"/><circle cx="16" cy="0" r="2.8" fill="#fffdf0"/>
+      <!-- Morgan Square Fountain -->
+      <g id="morgan-fountain" transform="translate(350, 465)">
+        <path d="M 0,30 L 60,30 L 55,20 L 5,20 Z" fill="#0a121e" />
+        <path d="M 20,20 L 40,20 L 35,5 L 25,5 Z" fill="#050a12" />
+        <path d="M 15,5 L 45,5 L 40,-5 L 20,-5 Z" fill="#0a121e" />
+        <!-- Water -->
+        <g class="fountain-water" fill="none" stroke="#a0d8ef" stroke-width="1.5">
+          <path d="M 30,-5 Q 15,-20 5,0" />
+          <path d="M 30,-5 Q 45,-20 55,0" />
+          <path d="M 30,-5 Q 30,-25 30,-10" />
+          <path d="M 30,-5 Q 20,-15 15,-5" />
+          <path d="M 30,-5 Q 40,-15 45,-5" />
+        </g>
       </g>
-    </g>
-    <g mask="url(#ft_fieldMask)" style="mix-blend-mode: screen;">
-      <path d="M 12,-6 L 90,120 L 40,120 Z" fill="url(#ft_beamGrad)" opacity="0.92"/>
-      <path d="M 4,-6 L 50,120 L 20,120 Z" fill="url(#ft_beamGrad)" opacity="0.88"/>
-    </g>
-  </g>
 
-  <!-- Left-front tower -->
-  <g transform="translate(-120,40)">
-    <rect x="-3" y="-48" width="6" height="96" rx="2" fill="#0a0f12"/>
-    <g transform="translate(0,-52)">
-      <rect x="-22" y="-6" width="44" height="12" rx="3" fill="#0a121e" stroke="#142233" stroke-width="0.7"/>
-      <g filter="url(#ft_glow)"><circle cx="-12" cy="0" r="2.4" fill="#fffdf0"/><circle cx="0" cy="0" r="2.4" fill="#fffdf0"/><circle cx="12" cy="0" r="2.4" fill="#fffdf0"/></g>
-    </g>
-    <g mask="url(#ft_fieldMask)" style="mix-blend-mode: screen;">
-      <path d="M -8,-4 L -60,120 L -30,120 Z" fill="url(#ft_beamGrad)" opacity="0.86"/>
-    </g>
-  </g>
+      <!-- FIFTH THIRD PARK -->
+      <g id="fifth-third-park" transform="translate(85,330) scale(0.40)" style="filter: drop-shadow(0 6px 14px rgba(0,0,0,0.55));">
+        <defs>
+          <linearGradient id="ft_fieldStripe" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#1b5e20"/>
+            <stop offset="50%" stop-color="#2a7a2f"/>
+            <stop offset="100%" stop-color="#1b5e20"/>
+          </linearGradient>
+          <radialGradient id="ft_bowlShade" cx="50%" cy="30%" r="70%">
+            <stop offset="0%" stop-color="#1b5e20" stop-opacity="0.0"/>
+            <stop offset="60%" stop-color="#071217" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="#00060a" stop-opacity="0.8"/>
+          </radialGradient>
+          <linearGradient id="ft_beamGrad" x1="0.5" y1="0" x2="0.5" y2="1">
+            <stop offset="0%" stop-color="#fffdf0" stop-opacity="0.98"/>
+            <stop offset="30%" stop-color="#fff6c8" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#fff6c8" stop-opacity="0.0"/>
+          </linearGradient>
+          <filter id="ft_glow" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="3.5" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <mask id="ft_fieldMask">
+            <rect x="-400" y="-300" width="800" height="800" fill="black"/>
+            <ellipse cx="0" cy="72" rx="120" ry="44" fill="white"/>
+          </mask>
+        </defs>
 
-  <!-- Right-front tower -->
-  <g transform="translate(120,40)">
-    <rect x="-3" y="-48" width="6" height="96" rx="2" fill="#0a0f12"/>
-    <g transform="translate(0,-52)">
-      <rect x="-22" y="-6" width="44" height="12" rx="3" fill="#0a121e" stroke="#142233" stroke-width="0.7"/>
-      <g filter="url(#ft_glow)"><circle cx="-12" cy="0" r="2.4" fill="#fffdf0"/><circle cx="0" cy="0" r="2.4" fill="#fffdf0"/><circle cx="12" cy="0" r="2.4" fill="#fffdf0"/></g>
-    </g>
-    <g mask="url(#ft_fieldMask)" style="mix-blend-mode: screen;">
-      <path d="M 8,-4 L 60,120 L 30,120 Z" fill="url(#ft_beamGrad)" opacity="0.86"/>
-    </g>
-  </g>
+        <!-- Stadium mass -->
+        <g transform="translate(0,0)">
+          <ellipse cx="0" cy="120" rx="220" ry="90" fill="#071018" />
+          <ellipse cx="0" cy="120" rx="200" ry="78" fill="#0b1620" />
+          <path d="M -180,120 A 180 80 0 0 1 180,120 L 180,150 A 180 80 0 0 0 -180,150 Z" fill="#0d1a22" stroke="rgba(255,255,255,0.02)"/>
+          <path d="M -150,86 A 160 56 0 0 1 150,86 L 150,100 A 160 56 0 0 0 -150,100 Z" fill="#08121a" opacity="0.95"/>
+        </g>
 
-  <!-- Neon header above stadium (smaller) -->
-  <g transform="translate(0,-132) scale(0.92)">
-    <rect x="-140" y="-22" width="280" height="40" rx="8" fill="#020508" stroke="#0d1622" stroke-width="1.6"/>
-    <rect x="-132" y="-16" width="264" height="28" rx="6" fill="none" stroke="#ff3b3b" stroke-width="1.2" filter="url(#ft_glow)"/>
-    <text x="0" y="8" font-family="sans-serif" font-weight="900" font-size="16" fill="#a0d8ef" text-anchor="middle" letter-spacing="1.6" style="filter:url(#ft_glow);">
-      FIFTH THIRD PARK
-    </text>
+        <!-- Seating tiers -->
+        <g transform="translate(0,0)">
+          <path d="M -200,120 A 220 110 0 0 1 200,120 L 200,145 A 220 110 0 0 0 -200,145 Z" fill="#0b1620"/>
+          <path d="M -170,120 A 190 90 0 0 1 170,120 L 170,140 A 190 90 0 0 0 -170,140 Z" fill="#0e1b26"/>
+          <path d="M -140,120 A 160 70 0 0 1 140,120 L 140,135 A 160 70 0 0 0 -140,135 Z" fill="#12232f"/>
+          <g stroke="rgba(255,255,255,0.03)" stroke-width="0.8">
+            <path d="M -150,132 L 150,132" />
+            <path d="M -100,124 L 100,124" />
+          </g>
+          <g fill="#ffcf70" opacity="0.10">
+            <g transform="translate(-110,132)"><circle cx="0" cy="0" r="1.6"/><circle cx="22" cy="-1" r="1.6"/><circle cx="44" cy="-2" r="1.6"/></g>
+            <g transform="translate(-30,130)"><circle cx="0" cy="0" r="1.6"/><circle cx="22" cy="-1" r="1.6"/><circle cx="44" cy="-2" r="1.6"/></g>
+            <g transform="translate(50,130)"><circle cx="0" cy="0" r="1.6"/><circle cx="22" cy="-1" r="1.6"/><circle cx="44" cy="-2" r="1.6"/></g>
+          </g>
+        </g>
+
+        <!-- Raised field -->
+        <g transform="translate(0,-28)">
+          <ellipse cx="0" cy="120" rx="120" ry="44" fill="#1b5e20" stroke="#0b3a10" stroke-width="2.5" />
+          <ellipse cx="0" cy="120" rx="104" ry="36" fill="url(#ft_fieldStripe)" opacity="0.98" />
+          <circle cx="0" cy="104" r="12" fill="#d9c9a3" stroke="#b89f7a" stroke-width="1.2"/>
+          <path d="M -8,104 L 0,92 L 8,104 L 0,116 Z" fill="#d9c9a3" stroke="#b89f7a" stroke-width="0.7"/>
+          <circle cx="0" cy="98" r="4.5" fill="#b89f7a" />
+        </g>
+
+        <!-- Floodlights arrays -->
+        <g transform="translate(-160,10)">
+          <rect x="-4" y="-60" width="8" height="120" rx="2" fill="#0a0f12"/>
+          <g transform="translate(0,-64)">
+            <rect x="-28" y="-8" width="56" height="14" rx="3" fill="#0a121e" stroke="#142233" stroke-width="0.8"/>
+            <g filter="url(#ft_glow)"><circle cx="-20" cy="0" r="2.8" fill="#fffdf0"/><circle cx="-8" cy="0" r="2.8" fill="#fffdf0"/><circle cx="4" cy="0" r="2.8" fill="#fffdf0"/><circle cx="16" cy="0" r="2.8" fill="#fffdf0"/></g>
+          </g>
+          <g mask="url(#ft_fieldMask)" style="mix-blend-mode: screen;">
+            <path d="M -12,-6 L -90,120 L -40,120 Z" fill="url(#ft_beamGrad)" opacity="0.92"/>
+            <path d="M -4,-6 L -50,120 L -20,120 Z" fill="url(#ft_beamGrad)" opacity="0.88"/>
+          </g>
+        </g>
+
+        <g transform="translate(160,10)">
+          <rect x="-4" y="-60" width="8" height="120" rx="2" fill="#0a0f12"/>
+          <g transform="translate(0,-64)">
+            <rect x="-28" y="-8" width="56" height="14" rx="3" fill="#0a121e" stroke="#142233" stroke-width="0.8"/>
+            <g filter="url(#ft_glow)"><circle cx="-20" cy="0" r="2.8" fill="#fffdf0"/><circle cx="-8" cy="0" r="2.8" fill="#fffdf0"/><circle cx="4" cy="0" r="2.8" fill="#fffdf0"/><circle cx="16" cy="0" r="2.8" fill="#fffdf0"/></g>
+          </g>
+          <g mask="url(#ft_fieldMask)" style="mix-blend-mode: screen;">
+            <path d="M 12,-6 L 90,120 L 40,120 Z" fill="url(#ft_beamGrad)" opacity="0.92"/>
+            <path d="M 4,-6 L 50,120 L 20,120 Z" fill="url(#ft_beamGrad)" opacity="0.88"/>
+          </g>
+        </g>
+
+        <g transform="translate(-120,40)">
+          <rect x="-3" y="-48" width="6" height="96" rx="2" fill="#0a0f12"/>
+          <g transform="translate(0,-52)">
+            <rect x="-22" y="-6" width="44" height="12" rx="3" fill="#0a121e" stroke="#142233" stroke-width="0.7"/>
+            <g filter="url(#ft_glow)"><circle cx="-12" cy="0" r="2.4" fill="#fffdf0"/><circle cx="0" cy="0" r="2.4" fill="#fffdf0"/><circle cx="12" cy="0" r="2.4" fill="#fffdf0"/></g>
+          </g>
+          <g mask="url(#ft_fieldMask)" style="mix-blend-mode: screen;">
+            <path d="M -8,-4 L -60,120 L -30,120 Z" fill="url(#ft_beamGrad)" opacity="0.86"/>
+          </g>
+        </g>
+
+        <g transform="translate(120,40)">
+          <rect x="-3" y="-48" width="6" height="96" rx="2" fill="#0a0f12"/>
+          <g transform="translate(0,-52)">
+            <rect x="-22" y="-6" width="44" height="12" rx="3" fill="#0a121e" stroke="#142233" stroke-width="0.7"/>
+            <g filter="url(#ft_glow)"><circle cx="-12" cy="0" r="2.4" fill="#fffdf0"/><circle cx="0" cy="0" r="2.4" fill="#fffdf0"/><circle cx="12" cy="0" r="2.4" fill="#fffdf0"/></g>
+          </g>
+          <g mask="url(#ft_fieldMask)" style="mix-blend-mode: screen;">
+            <path d="M 8,-4 L 60,120 L 30,120 Z" fill="url(#ft_beamGrad)" opacity="0.86"/>
+          </g>
+        </g>
+
+        <!-- Neon header above stadium -->
+        <g transform="translate(0,-132) scale(0.92)">
+          <rect x="-140" y="-22" width="280" height="40" rx="8" fill="#020508" stroke="#0d1622" stroke-width="1.6"/>
+          <rect x="-132" y="-16" width="264" height="28" rx="6" fill="none" stroke="#ff3b3b" stroke-width="1.2" filter="url(#ft_glow)"/>
+          <text x="0" y="8" font-family="sans-serif" font-weight="900" font-size="16" fill="#a0d8ef" text-anchor="middle" letter-spacing="1.6" style="filter:url(#ft_glow);">
+            FIFTH THIRD PARK
+          </text>
+
 
     <!-- logo slot centered under neon text (single-line data URI required) -->
     <!-- Replace PASTE_BASE64_HERE with your base64 string (no line breaks). Example:
