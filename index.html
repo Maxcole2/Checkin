@@ -182,17 +182,11 @@
     @keyframes blink { 0%, 100% { opacity: 0; } 50% { opacity: 0.9; } }
 
   /* --- WARM & WELCOMING ILLUMINATED SIGN --- */
-    .monument-sign {
-      position: absolute;
-      bottom: 55vh;
-      right: 85vw;
-      width: 280px;
-      z-index: 50;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transform: scale(0.55) perspective(1000px);
-    }
+    .monument-sign { 
+  right: 85vw; 
+  bottom: 55vh; 
+  transform: scale(0.25) perspective(1000px); 
+}
 
     .monument-sign::before {
       content: '';
@@ -1249,7 +1243,7 @@
         <input id="guestPhone" type="tel" required>
 
         <label>Email Address</label>
-        <input id="guestEmail" type="email" required>
+        <input id="guestEmail" type="email">
 
         <label>Reason for Visit</label>
         <div class="dropdown-header" id="sn-header">Select...</div>
