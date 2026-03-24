@@ -645,9 +645,25 @@
 
 
 
-     <!-- Building 1 (Moved 40 units toward Denny's) -->
-<g transform="translate(45, 0)">
+     <!-- New Building (Far left, slightly taller than Building 1) -->
+<g transform="translate(-30, 0)">
+  <path d="M 0,500 L 0,340 L 95,340 L 95,500 Z" fill="var(--building-base)" stroke="rgba(255,255,255,0.0)" stroke-width="1"/>
+  
+  <!-- Windows for the new taller building -->
+  <g fill="var(--window-glow)" opacity="0.6">
+    <rect x="15" y="360" width="12" height="15"/><rect x="40" y="360" width="12" height="15"/><rect x="65" y="360" width="12" height="15"/>
+    <rect x="15" y="390" width="12" height="15"/><rect x="40" y="390" width="12" height="15"/><rect x="65" y="390" width="12" height="15"/>
+    <rect x="15" y="420" width="12" height="15"/><rect x="40" y="420" width="12" height="15"/><rect x="65" y="420" width="12" height="15"/>
+    <rect x="15" y="450" width="12" height="15"/><rect x="40" y="450" width="12" height="15"/><rect x="65" y="450" width="12" height="15"/>
+    <rect x="15" y="480" width="12" height="15"/><rect x="40" y="480" width="12" height="15"/><rect x="65" y="480" width="12" height="15"/>
+  </g>
+</g>
+
+<!-- Building 1 -->
+<g transform="translate(55, 0)">
   <path d="M 0,500 L 0,400 L 80,400 L 80,350 L 150,350 L 150,500 Z" fill="var(--building-base)" stroke="rgba(255,255,255,0.0)" stroke-width="1"/>
+  
+  <!-- Windows for Building 1 -->
   <g fill="var(--window-glow)" opacity="0.8">
     <rect x="20" y="420" width="10" height="15"/><rect x="50" y="420" width="10" height="15"/>
     <rect x="20" y="450" width="10" height="15"/><rect x="50" y="450" width="10" height="15"/>
