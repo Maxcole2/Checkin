@@ -1610,10 +1610,7 @@
 
         if (selectedReason === "Pet Pantry") {
           const addressVal = document.getElementById("guestAddress").value.trim();
-          if (!addressVal) {
-            alert("Please enter your address.");
-            return;
-          }
+          
           if (!hasSigned) {
             alert("Please provide a signature to accept the waiver.");
             return;
@@ -1662,7 +1659,7 @@
     <input id="guestPhone" type="tel" maxlength="12" placeholder="123-456-7890" required>
 
     <label>Email Address</label>
-    <input id="guestEmail" type="email" required>
+    <input id="guestEmail" type="email">
 
     <label>Pet's Name</label>
     <input id="petName" required>
@@ -1749,334 +1746,183 @@
 }
 
     function loadAdoptions() {
-  title.textContent = "Adoption Match Quiz";
+      title.textContent = "Adoption Match Quiz";
+      form.innerHTML = `
+        <label>Name</label>
+        <input id="guestName" required>
 
-  form.innerHTML = `
-    <label>Name</label>
-    <input id="guestName" required>
+        <label>Phone Number</label>
+        <input id="guestPhone" type="tel" maxlength="12" placeholder="123-456-7890" required>
 
-    <label>Phone Number</label>
-    <input id="guestPhone" type="tel" maxlength="12" placeholder="123-456-7890" required>
+        <label>Email Address</label>
+        <input id="guestEmail" type="email">
 
-    <label>Email Address</label>
-    <input id="guestEmail" type="email" required>
+        <label>Animal Name (Optional)</label>
+        <input id="animalName" placeholder="Name of animal you are interested in">
 
-    <label>What are you looking to adopt?</label>
-    <div class="dropdown-header" id="type-header">Select...</div>
-    <div class="orange-line" id="type-line"></div>
+        <label>Observer / Staff Name (Optional)</label>
+        <input id="observerName" placeholder="Staff member assisting">
 
-    <div class="dropdown-content" id="type-dropdown">
-      <button type="button" class="prc-option" data-value="Dog">Dog</button>
-      <button type="button" class="prc-option" data-value="Cat">Cat</button>
-    </div>
+        <label>What are you looking to adopt?</label>
+        <div class="dropdown-header" id="type-header">Select...</div>
+        <div class="orange-line" id="type-line"></div>
 
-    <div id="quiz-container" style="display:none; margin-top:20px;"></div>
+        <div class="dropdown-content" id="type-dropdown">
+          <button type="button" class="prc-option" data-value="Dog">Dog</button>
+          <button type="button" class="prc-option" data-value="Cat">Cat</button>
+        </div>
 
-    <div id="result-box" style="
-      display:none;
-      margin-top:20px;
-      padding:20px;
-      border-radius:12px;
-      background:rgba(0,0,0,0.4);
-      border:1px solid var(--prc-orange);
-      color:white;
-    "></div>
+        <div id="quiz-container" style="display:none; margin-top:20px;"></div>
 
-    <button class="submit-btn" type="submit">Submit</button>
-  `;
+        <div id="result-box" style="
+          display:none;
+          margin-top:20px;
+          padding:20px;
+          border-radius:12px;
+          background:rgba(0,0,0,0.4);
+          border:1px solid var(--prc-orange);
+          color:white;
+        "></div>
 
-  setupPhoneFormatting();
-
-  let selectedType = "";
-  let answers = [];
-
-  // =========================
-  // DOG QUESTIONS
-  // =========================
-  const dogQuestions = [
-    {
-      q:"How active is your daily routine?",
-      a:[
-        "A. I’m always on the go — I love walks, hikes, or runs outdoors! 🏃‍♀️",
-        "B. I enjoy regular activity, like daily walks and playtime 🐕‍🦺",
-        "C. I prefer short strolls and relaxing at home ☕",
-        "D. I’m mostly indoors and enjoy quiet downtime 🛋️"
-      ]
-    },
-    {
-      q:"How much time can you spend with a dog each day?",
-      a:[
-        "A. I’m home most of the day or can bring my dog along 🏠",
-        "B. I work regular hours but have time mornings/evenings ⏰",
-        "C. I’m home part-time or my schedule changes often 🕐",
-        "D. I travel or work long hours regularly ✈️"
-      ]
-    },
-    {
-      q:"What kind of temperament do you prefer in a dog?",
-      a:[
-        "A. Outgoing, playful, and social 🐾",
-        "B. Friendly and affectionate, but not over-the-top 💕",
-        "C. Calm, gentle, and easygoing 🌿",
-        "D. Independent — enjoys their own space 😎"
-      ]
-    },
-    {
-      q:"How do you feel about training or structured activities?",
-      a:[
-        "A. Love it! I’d enjoy obedience classes or agility 🐕‍🦺",
-        "B. I’m happy to do some training and basics ✋",
-        "C. I’d prefer a dog who already knows the basics 😊",
-        "D. I’d rather have a low-maintenance, easygoing dog 🙃"
-      ]
-    },
-    {
-      q:"What’s your home environment like?",
-      a:[
-        "A. Active household — kids, guests, other pets 🏡",
-        "B. Moderate activity — some bustle, some calm ☕",
-        "C. Peaceful and predictable 🌸",
-        "D. Very quiet — just me (and maybe one other person) 🌿"
-      ]
-    },
-    {
-      q:"How much space do you have for a dog to exercise?",
-      a:[
-        "A. Large yard or nearby trails 🌲",
-        "B. Small yard or frequent walks 🚶",
-        "C. Apartment or limited outdoor space 🏢",
-        "D. Indoor only (occasional short walks) 🛋️"
-      ]
-    },
-    {
-      q:"What’s your ideal bonding style?",
-      a:[
-        "A. Constant companion — we go everywhere together 🐶",
-        "B. Playmate and cuddle buddy 💖",
-        "C. Sweet but independent friend 😺",
-        "D. Quiet roommate who’s easy to care for 😌"
-      ]
-    },
-    {
-      q:"How do you handle noise or high energy?",
-      a:[
-        "A. I love energy — the more the merrier! ⚡",
-        "B. Some excitement is fine, but not constant 🐾",
-        "C. I prefer calm, quieter dogs 😌",
-        "D. I need peace and quiet — no barking, please 🙉"
-      ]
-    },
-    {
-      q:"What age range do you prefer for your new dog?",
-      a:[
-        "A. Puppy — I’m ready for training and energy! 🐾",
-        "B. Young adult — playful but a bit more settled 🐕",
-        "C. Adult — calm and experienced 🛋️",
-        "D. Senior — gentle and low-energy companion ❤️"
-      ]
-    },
-    {
-      q:"How do you feel about grooming or higher-maintenance breeds?",
-      a:[
-        "A. I don’t mind regular brushing or grooming 💅",
-        "B. I can handle some upkeep ✂️",
-        "C. I’d prefer low-maintenance coats or minimal shedding 🐕"
-      ]
-    }
-  ];
-
-  // =========================
-  // CAT QUESTIONS
-  // =========================
-  const catQuestions = [
-    {
-      q:"What kind of energy level do you want in a cat?",
-      a:[
-        "A. Super playful — I love interactive toys and zoomies! ⚡",
-        "B. Balanced — some play, some cuddle time 🐾",
-        "C. Low-key — mostly naps and quiet companionship 😌",
-        "D. Independent — a cat who does their own thing 🧘"
-      ]
-    },
-    {
-      q:"How much time can you spend with your cat each day?",
-      a:[
-        "A. Lots! I’m home most of the day or have flexible time 🏠",
-        "B. A few hours before or after work 🐈",
-        "C. Limited — I have a busy schedule 🕐",
-        "D. I travel or work long hours ✈️"
-      ]
-    },
-    {
-      q:"What’s your ideal cat behavior?",
-      a:[
-        "A. Outgoing, social, and curious — the life of the party! 🎉",
-        "B. Friendly and affectionate, but not clingy 💖",
-        "C. Shy and gentle — I like earning their trust 🌸",
-        "D. Independent and calm — we coexist peacefully 😼"
-      ]
-    },
-    {
-      q:"How do you feel about giving your cat training or enrichment?",
-      a:[
-        "A. Love it! I’ll teach tricks, leash-train, or make puzzle toys 🎓",
-        "B. I’ll provide toys and scratching posts 🧶",
-        "C. I can do some basics, but prefer low-maintenance 🪴",
-        "D. I’d prefer a cat that entertains themselves 😺"
-      ]
-    },
-    {
-      q:"What’s your home environment like?",
-      a:[
-        "A. Busy — kids, guests, other pets, lots happening 🏡",
-        "B. Balanced — some activity, some quiet time ☕",
-        "C. Calm — a few people, quiet most of the time 🌿",
-        "D. Very quiet — just me and maybe a plant 🌼"
-      ]
-    },
-    {
-      q:"How do you feel about grooming or higher-maintenance coats in cats?",
-      a:[
-        "A. I don’t mind brushing or grooming regularly 💅",
-        "B. Some shedding is fine — I can manage upkeep ✂️",
-        "C. I prefer low-maintenance or short-haired cats 🐈"
-      ]
-    }
-  ];
-
-  // =========================
-  // (rest of your code unchanged)
-  // =========================
-
-  function renderQuiz(questions) {
-    const container = document.getElementById("quiz-container");
-    const resultBox = document.getElementById("result-box");
-
-    container.innerHTML = "";
-    resultBox.style.display = "none";
-    answers = new Array(questions.length).fill(0);
-
-    questions.forEach((item, i) => {
-      let block = `
-        <div style="margin-bottom:25px;">
-          <div style="font-size:20px; font-weight:bold; margin-bottom:10px; color:white;">
-            ${i+1}. ${item.q}
-          </div>
+        <button class="submit-btn" type="submit">Submit</button>
       `;
 
-      item.a.forEach((choice, index) => {
-        const score = 4 - index;
+      setupPhoneFormatting();
+      let selectedType = "";
+      let answers = [];
 
-        block += `
-          <button type="button"
-            class="prc-option"
-            style="padding:12px; font-size:14px;"
-            data-q="${i}"
-            data-score="${score}">
-            ${choice}
-          </button>
-        `;
-      });
+      const dogQuestions = [
+        { q:"How active is your daily routine?", a:["A. I’m always on the go — I love walks, hikes, or runs outdoors! 🏃‍♀️", "B. I enjoy regular activity, like daily walks and playtime 🐕‍🦺", "C. I prefer short strolls and relaxing at home ☕", "D. I’m mostly indoors and enjoy quiet downtime 🛋️"] },
+        { q:"How much time can you spend with a dog each day?", a:["A. I’m home most of the day or can bring my dog along 🏠", "B. I work regular hours but have time mornings/evenings ⏰", "C. I’m home part-time or my schedule changes often 🕐", "D. I travel or work long hours regularly ✈️"] },
+        { q:"What kind of temperament do you prefer in a dog?", a:["A. Outgoing, playful, and social 🐾", "B. Friendly and affectionate, but not over-the-top 💕", "C. Calm, gentle, and easygoing 🌿", "D. Independent — enjoys their own space 😎"] },
+        { q:"How do you feel about training or structured activities?", a:["A. Love it! I’d enjoy obedience classes or agility 🐕‍🦺", "B. I’m happy to do some training and basics ✋", "C. I’d prefer a dog who already knows the basics 😊", "D. I’d rather have a low-maintenance, easygoing dog 🙃"] },
+        { q:"What’s your home environment like?", a:["A. Active household — kids, guests, other pets 🏡", "B. Moderate activity — some bustle, some calm ☕", "C. Peaceful and predictable 🌸", "D. Very quiet — just me (and maybe one other person) 🌿"] },
+        { q:"How much space do you have for a dog to exercise?", a:["A. Large yard or nearby trails 🌲", "B. Small yard or frequent walks 🚶", "C. Apartment or limited outdoor space 🏢", "D. Indoor only (occasional short walks) 🛋️"] },
+        { q:"What’s your ideal bonding style?", a:["A. Constant companion — we go everywhere together 🐶", "B. Playmate and cuddle buddy 💖", "C. Sweet but independent friend 😺", "D. Quiet roommate who’s easy to care for 😌"] },
+        { q:"How do you handle noise or high energy?", a:["A. I love energy — the more the merrier! ⚡", "B. Some excitement is fine, but not constant 🐾", "C. I prefer calm, quieter dogs 😌", "D. I need peace and quiet — no barking, please 🙉"] },
+        { q:"What age range do you prefer for your new dog?", a:["A. Puppy — I’m ready for training and energy! 🐾", "B. Young adult — playful but a bit more settled 🐕", "C. Adult — calm and experienced 🛋️", "D. Senior — gentle and low-energy companion ❤️"] },
+        { q:"How do you feel about grooming or higher-maintenance breeds?", a:["A. I don’t mind regular brushing or grooming 💅", "B. I can handle some upkeep ✂️", "C. I’d prefer low-maintenance coats or minimal shedding 🐕"] }
+      ];
 
-      block += `</div>`;
-      container.innerHTML += block;
-    });
+      const catQuestions = [
+        { q:"What kind of energy level do you want in a cat?", a:["A. Super playful — I love interactive toys and zoomies! ⚡", "B. Balanced — some play, some cuddle time 🐾", "C. Low-key — mostly naps and quiet companionship 😌", "D. Independent — a cat who does their own thing 🧘"] },
+        { q:"How much time can you spend with your cat each day?", a:["A. Lots! I’m home most of the day or have flexible time 🏠", "B. A few hours before or after work 🐈", "C. Limited — I have a busy schedule 🕐", "D. I travel or work long hours ✈️"] },
+        { q:"What’s your ideal cat behavior?", a:["A. Outgoing, social, and curious — the life of the party! 🎉", "B. Friendly and affectionate, but not clingy 💖", "C. Shy and gentle — I like earning their trust 🌸", "D. Independent and calm — we coexist peacefully 😼"] },
+        { q:"How do you feel about giving your cat training or enrichment?", a:["A. Love it! I’ll teach tricks, leash-train, or make puzzle toys 🎓", "B. I’ll provide toys and scratching posts 🧶", "C. I can do some basics, but prefer low-maintenance 🪴", "D. I’d prefer a cat that entertains themselves 😺"] },
+        { q:"What’s your home environment like?", a:["A. Busy — kids, guests, other pets, lots happening 🏡", "B. Balanced — some activity, some quiet time ☕", "C. Calm — a few people, quiet most of the time 🌿", "D. Very quiet — just me and maybe a plant 🌼"] },
+        { q:"How do you feel about grooming or higher-maintenance coats in cats?", a:["A. I don’t mind brushing or grooming regularly 💅", "B. Some shedding is fine — I can manage upkeep ✂️", "C. I prefer low-maintenance or short-haired cats 🐈"] }
+      ];
 
-    container.style.display = "block";
+      function renderQuiz(questions) {
+        const container = document.getElementById("quiz-container");
+        const resultBox = document.getElementById("result-box");
+        container.innerHTML = "";
+        resultBox.style.display = "none";
+        answers = new Array(questions.length).fill(0);
 
-    container.querySelectorAll(".prc-option").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const qIndex = btn.dataset.q;
-        const score = parseInt(btn.dataset.score);
+        questions.forEach((item, i) => {
+          let block = `
+            <div style="margin-bottom:25px;">
+              <div style="font-size:20px; font-weight:bold; margin-bottom:10px; color:white;">
+                ${i+1}. ${item.q}
+              </div>
+          `;
+          item.a.forEach((choice, index) => {
+            const score = 4 - index;
+            block += `
+              <button type="button" class="prc-option" style="padding:12px; font-size:14px;" data-q="${i}" data-score="${score}">
+                ${choice}
+              </button>
+            `;
+          });
+          block += `</div>`;
+          container.innerHTML += block;
+        });
 
-        container.querySelectorAll(`[data-q="${qIndex}"]`)
-          .forEach(b => b.classList.remove("selected"));
-
-        btn.classList.add("selected");
-        answers[qIndex] = score;
-
-        updateLiveResult();
-      });
-    });
-  }
-
-  function calculateResult() {
-    const total = answers.reduce((a,b)=>a+b,0);
-
-    if (selectedType === "Dog") {
-      if (total >= 35) return ["🌟 The Adventure Buddy","Energetic, outgoing, and playful. Perfect for active homes."];
-      if (total >= 26) return ["💖 Partner in Crime","Balanced, friendly, and adaptable."];
-      if (total >= 17) return ["😌 Professional Lounger","Calm, cuddly, and relaxed."];
-      return ["😎 The Independent Spirit","Low-maintenance and self-sufficient."];
-    } else {
-      if (total >= 16) return ["🌟 The Social Butterfly","Playful, confident, and social."];
-      if (total >= 11) return ["💖 Partner in Crime","Balanced and affectionate."];
-      if (total >= 6) return ["😌 The Quiet Soul","Shy, gentle, and loyal."];
-      return ["😎 The Independent Thinker","Independent and low-maintenance."];
-    }
-  }
-
-  function updateLiveResult() {
-    if (answers.includes(0)) return;
-
-    const [titleText, desc] = calculateResult();
-    const resultBox = document.getElementById("result-box");
-
-    resultBox.innerHTML = `
-      <h2 style="color:var(--prc-orange); margin-bottom:10px;">${titleText}</h2>
-      <p>${desc}</p>
-    `;
-
-    resultBox.style.display = "block";
-  }
-
-  setTimeout(() => {
-    setupDropdown(
-      "type-header",
-      "type-line",
-      "type-dropdown",
-      (value) => {
-        selectedType = value;
-        if (value === "Dog") renderQuiz(dogQuestions);
-        if (value === "Cat") renderQuiz(catQuestions);
+        container.style.display = "block";
+        container.querySelectorAll(".prc-option").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const qIndex = btn.dataset.q;
+            const score = parseInt(btn.dataset.score);
+            container.querySelectorAll(`[data-q="${qIndex}"]`).forEach(b => b.classList.remove("selected"));
+            btn.classList.add("selected");
+            answers[qIndex] = score;
+            updateLiveResult();
+          });
+        });
       }
-    );
-  }, 50);
 
-  form.onsubmit = async (e) => {
-    e.preventDefault();
+      function calculateResult() {
+        const total = answers.reduce((a,b)=>a+b,0);
+        if (selectedType === "Dog") {
+          if (total >= 36) return ["⛰️ The Adventure Buddy","Energetic, outgoing, and playful. Perfect for active homes that love the outdoors and daily adventures."];
+          if (total >= 26) return ["☺︎ Partner in Crime","Balanced and affectionate. Enjoys play and rest equally — adaptable to most homes."];
+          if (total >= 17) return ["♡ The Quiet Soul","Shy or calm; enjoys quiet environments and one-on-one bonding. Best in patient, calm homes."];
+          return ["💡 The Independent Thinker","Self-sufficient, prefers minimal interaction. Perfect for experienced owners or quiet households."];
+        } else {
+          if (total >= 16) return ["⛰️ The Adventure Buddy","Energetic, outgoing, and playful. Perfect for active homes that love the outdoors and daily adventures."];
+          if (total >= 11) return ["☺︎ Partner in Crime","Balanced and affectionate. Enjoys play and rest equally — adaptable to most homes."];
+          if (total >= 6) return ["♡ The Quiet Soul","Shy or calm; enjoys quiet environments and one-on-one bonding. Best in patient, calm homes."];
+          return ["💡 The Independent Thinker","Self-sufficient, prefers minimal interaction. Perfect for experienced owners or quiet households."];
+        }
+      }
 
-    if (!selectedType || answers.includes(0)) {
-      alert("Please complete the quiz.");
-      return;
+      function updateLiveResult() {
+        if (answers.includes(0)) return;
+        const [titleText, desc] = calculateResult();
+        const resultBox = document.getElementById("result-box");
+        resultBox.innerHTML = `<h2 style="color:var(--prc-orange); margin-bottom:10px;">${titleText}</h2><p>${desc}</p>`;
+        resultBox.style.display = "block";
+      }
+
+      setTimeout(() => {
+        setupDropdown("type-header", "type-line", "type-dropdown", (value) => {
+          selectedType = value;
+          if (value === "Dog") renderQuiz(dogQuestions);
+          if (value === "Cat") renderQuiz(catQuestions);
+        });
+      }, 50);
+
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+        if (!selectedType || answers.includes(0)) {
+          alert("Please complete the quiz.");
+          return;
+        }
+
+        const [personalityTitle, personalityDesc] = calculateResult();
+        const totalScore = answers.reduce((a, b) => a + b, 0);
+        const formattedAnswers = {};
+        answers.forEach((ans, index) => { formattedAnswers[`q${index + 1}`] = ans; });
+
+        const data = {
+          time: Date.now(),
+          guestName: document.getElementById("guestName").value.trim(),
+          phone: document.getElementById("guestPhone").value.trim(),
+          email: document.getElementById("guestEmail").value.trim(),
+          animalName: document.getElementById("animalName").value.trim(),
+          observerName: document.getElementById("observerName").value.trim(),
+          
+          // KEY FIXES FOR PAGER SYNC:
+          interest: selectedType,       // Maps to "Interest" field
+          personality: personalityTitle, // Maps to "Personality" title
+          quizScore: totalScore,        // Maps to "Score"
+          quizAnswers: formattedAnswers, // Used for PDF generation
+          status: "waiting"             // Required for card to appear
+        };
+
+        await checkinsRef.push(data);
+        toast.classList.add("show");
+        setTimeout(() => {
+          toast.classList.remove("show");
+          goBack();
+        }, 2000);
+        form.reset();
+      };
+
+      initFirebase("adoptions", ADOPTIONS_CONFIG);
+      showScreen(formContainer);
     }
-
-    const result = calculateResult()[0];
-
-    const data = {
-      time: Date.now(),
-      guestName: document.getElementById("guestName").value.trim(),
-      phone: document.getElementById("guestPhone").value.trim(),
-      email: document.getElementById("guestEmail").value.trim(),
-      status: "waiting",
-      type: selectedType,
-      answers: answers,
-      result: result
-    };
-
-    await checkinsRef.push(data);
-
-    toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 2000);
-
-    form.reset();
-    document.getElementById("quiz-container").innerHTML = "";
-    document.getElementById("result-box").style.display = "none";
-  };
-
-  initFirebase("adoptions", ADOPTIONS_CONFIG);
-  showScreen(formContainer);
-}
   </script>
 
 </body>
