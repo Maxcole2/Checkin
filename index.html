@@ -1648,7 +1648,7 @@
       showScreen(formContainer);
     }
 
-   function loadClinic() {
+function loadClinic() {
   title.textContent = "Clinic Check-In";
 
   form.innerHTML = `
@@ -1685,7 +1685,25 @@
     <label>Reason for Visit</label>
     <input id="reason" required>
 
-    <button class="submit-btn" type="submit">Submit</button>
+    <div style="margin-top: 25px; padding: 15px; border: 2px solid #ccc; background: #f9f9f9; border-radius: 5px; font-size: 14px; color: #000000; line-height: 1.5;">
+      <h3 style="margin-top: 0; color: #000000; font-weight: bold;">Medical & Surgical Risk Liability Disclaimer</h3>
+      <p style="margin-bottom: 10px;">I understand that all medical and surgical procedures carry inherent risks, including the possibility of complications or death, despite the exercise of reasonable care and proper technique. I acknowledge that no guarantee has been made regarding the outcome of any treatment or surgical procedure.</p>
+      <p style="margin-bottom: 10px;">I understand that if my animal experiences cardiac or respiratory arrest, crashes during surgery, or at any point while dropped off at the Spartanburg County Pet Resource Center for medical services, cardiopulmonary resuscitation (CPR) may be administered at the discretion of the attending veterinary staff. I acknowledge that CPR is not always effective and may not result in recovery.</p>
+      <p style="margin-bottom: 10px;">I hereby release, indemnify, and hold harmless the Spartanburg County Pet Resource Center, Spartanburg County, and all associated employees, veterinarians, volunteers, and facilities from any and all claims, damages, or liabilities arising from the treatment, care, or surgical procedures performed.</p>
+      <p style="margin-bottom: 15px;">I affirm that I am the legal owner or authorized agent for the animal presented today and that I have the authority to grant consent for the veterinarian to examine, treat, and/or perform surgery on this animal.</p>
+      
+      <input type="checkbox" id="waiverAgree" required>
+      <label for="waiverAgree" style="display: inline; color: #000000; font-weight: bold;">I acknowledge and agree to the above terms</label>
+      
+      <br><br>
+      <label style="color: #000000; font-weight: bold;">Signature</label>
+      <div style="border: 1px solid #000000; background: #ffffff; border-radius: 4px; touch-action: none; margin-top: 5px;">
+        <canvas id="signatureCanvas" width="400" height="150" style="width: 100%; display: block;"></canvas>
+      </div>
+      <button type="button" id="clearSignature" style="margin-top: 8px; padding: 6px 12px; cursor: pointer; background: #e0e0e0; border: 1px solid #ccc; border-radius: 4px;">Clear Signature</button>
+    </div>
+
+    <button class="submit-btn" type="submit" style="margin-top: 20px;">Submit</button>
   `;
 
   setupPhoneFormatting();
@@ -1711,8 +1729,75 @@
     );
   }, 50);
 
+  // --- SIGNATURE PAD LOGIC ---
+  const canvas = document.getElementById("signatureCanvas");
+  const ctx = canvas.getContext("2d");
+  let isDrawing = false;
+
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "#000000";
+  ctx.lineCap = "round";
+
+  // Calculates exact touch/mouse position
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+      x: (clientX - rect.left) * (canvas.width / rect.width),
+      y: (clientY - rect.top) * (canvas.height / rect.height)
+    };
+  }
+
+  function startDraw(e) {
+    e.preventDefault(); // Stops iPad from scrolling
+    isDrawing = true;
+    const pos = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+  }
+
+  function draw(e) {
+    e.preventDefault(); // Stops iPad from scrolling
+    if (!isDrawing) return;
+    const pos = getPos(e);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+  }
+
+  function endDraw() {
+    isDrawing = false;
+    ctx.closePath();
+  }
+
+  // Mouse Events (Desktop)
+  canvas.addEventListener("mousedown", startDraw);
+  canvas.addEventListener("mousemove", draw);
+  canvas.addEventListener("mouseup", endDraw);
+  canvas.addEventListener("mouseout", endDraw);
+
+  // Touch Events (iPad/Phones)
+  canvas.addEventListener("touchstart", startDraw, { passive: false });
+  canvas.addEventListener("touchmove", draw, { passive: false });
+  canvas.addEventListener("touchend", endDraw);
+
+  // Clear Button
+  document.getElementById("clearSignature").addEventListener("click", () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  });
+  // ---------------------------
+
   form.onsubmit = async (e) => {
     e.preventDefault();
+
+    // Verify signature isn't blank
+    const blankCanvas = document.createElement("canvas");
+    blankCanvas.width = canvas.width;
+    blankCanvas.height = canvas.height;
+    if (canvas.toDataURL() === blankCanvas.toDataURL()) {
+      alert("Please provide a signature before submitting.");
+      return;
+    }
 
     const data = {
       time: Date.now(),
@@ -1730,7 +1815,10 @@
 
       breed: document.getElementById("breed").value.trim(),
       weight: document.getElementById("weight").value.trim(),
-      reason: document.getElementById("reason").value.trim()
+      reason: document.getElementById("reason").value.trim(),
+      
+      waiverAgreed: document.getElementById("waiverAgree").checked,
+      signature: canvas.toDataURL() // Saves the drawn signature image to database
     };
 
     await checkinsRef.push(data);
@@ -1739,6 +1827,7 @@
     setTimeout(() => toast.classList.remove("show"), 2000);
 
     form.reset();
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clears pad for the next person
   };
 
   initFirebase("clinic", CLINIC_CONFIG);
